@@ -29,15 +29,15 @@ const queryCariById = gql`
 `;
 export default function Home() {
   const { data, loading: loadingAllData, error } = useQuery(getPengunjung);
-  const [cariById, { data: DataById, loading: loadingById }] =
+  const [cariById, { data: dataById, loading: loadingById }] =
     useLazyQuery(queryCariById);
 
   const [pengunjung, setPengunjung] = useState("");
   const [id, setId] = useState("");
 
   useEffect(() => {
-    if (DataById) setPengunjung(DataById);
-  }, [DataById]);
+    if (dataById) setPengunjung(dataById);
+  }, [dataById]);
 
   useEffect(() => {
     if (data) setPengunjung(data);
@@ -56,7 +56,7 @@ export default function Home() {
     cariById({ variables: { id } });
   };
 
-  if (loadingAllData || loadingById) return <LoadingSvg />;
+  if (loadingAllData) return <LoadingSvg />;
   if (error) return error;
 
   return (
@@ -66,7 +66,11 @@ export default function Home() {
       <button onClick={cariPengunjung}>Cari</button>
       <br />
       <br />
-      <ListPassenger data={pengunjung} hapusPengunjung={hapusPengunjung} />
+      <ListPassenger
+        data={pengunjung}
+        loadingById={loadingById}
+        hapusPengunjung={hapusPengunjung}
+      />
       <PassengerInput tambahPengunjung={tambahPengunjung} />
     </div>
   );
