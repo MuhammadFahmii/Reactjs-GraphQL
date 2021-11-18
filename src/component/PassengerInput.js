@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./Home.css";
 
 function PassengerInput(props) {
+  console.log(props.data);
   const [state, setState] = useState({
     nama: "",
     umur: "",
