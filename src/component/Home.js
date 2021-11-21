@@ -3,11 +3,11 @@ import PassengerInput from "./PassengerInput";
 import ListPassenger from "./ListPassenger";
 import Header from "./Header";
 import gql from "graphql-tag";
-import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation, useSubscription } from "@apollo/client";
 import LoadingSvg from "./LoadingSvg";
 
 const getPengunjung = gql`
-  query MyQuery {
+  subscription MySubscription {
     pengunjung {
       id
       nama
@@ -43,10 +43,12 @@ const queryDeletePengunjung = gql`
   }
 `;
 
-// const queryUpdatePengunjung = gql``;
-
 export default function Home() {
-  const { data, loading: loadingAllData, error } = useQuery(getPengunjung);
+  const {
+    data,
+    loading: loadingAllData,
+    error,
+  } = useSubscription(getPengunjung);
   const [cariById, { data: dataById, loading: loadingById }] =
     useLazyQuery(queryCariById);
   const [insertPengunjung, { loading: loadingInsert }] = useMutation(

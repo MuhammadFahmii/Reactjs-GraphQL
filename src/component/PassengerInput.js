@@ -26,7 +26,7 @@ function PassengerInput(props) {
         const newData = {
           nama: state.nama,
           umur: state.umur,
-          jenisKelamin: state.jenisKelamin,
+          jenis_kelamin: state.jenisKelamin,
         };
         props.tambahPengunjung(newData);
         setState({
