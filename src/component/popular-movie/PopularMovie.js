@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card, Row, Col, Button, Stack, CardImg } from "react-bootstrap";
+import { Card, Row, Col, Badge } from "react-bootstrap";
 
 export default function PopularMovie() {
   const [trendingWeek, setTrendingWeek] = useState();
@@ -91,7 +91,7 @@ export default function PopularMovie() {
       const { results } = await response.json();
       let best5 = [];
       results?.map((e) => {
-        if (best5.length === 5) return setTrendingWeek(best5);
+        if (best5.length === 10) return setTrendingWeek(best5);
         genre.map(({ id, name }) => {
           if (id === e.genre_ids[0]) {
             const newData = {
@@ -107,30 +107,64 @@ export default function PopularMovie() {
     };
     getTrendingWeek();
   }, []);
+
+  const [hover, setHover] = useState(false);
+  let hoverImg;
+  const toogleHover = () => {
+    setHover(!hover);
+  };
+  if (hover) {
+    hoverImg = { filter: "brightness(70%)" };
+  } else {
+    hoverImg = { filter: "brightness(50%)" };
+  }
+
+  const handleOnClick = (id) => {
+    console.log(id);
+  };
+
   return (
     <>
-      <h1 style={{ textAlign: "center", color: "white" }}>
+      <h1
+        style={{
+          textAlign: "center",
+          color: "white",
+        }}
+      >
         Popular Movies this Week
       </h1>
-      <Row xs={1} md={4} className="g-4">
+      <Row xs={1} className="g-4">
         {Array.from({ length: 1 }).map((_, idx) => (
           <Col
             style={{
               display: "flex",
+              flexWrap: "wrap",
             }}
           >
-            {trendingWeek?.map((e) => {
+            {trendingWeek?.map((e, i) => {
               return (
-                <Col className="mx-4">
-                  <Card>
-                    <Card.Img variant="down" src={e.img} />
+                <Col className="mx-4 my-2">
+                  <Card
+                    onMouseEnter={toogleHover}
+                    onMouseLeave={toogleHover}
+                    onClick={() => handleOnClick(e.id)}
+                    style={{ border: "none", cursor: "pointer" }}
+                  >
+                    <Card.Img variant="down" src={e.img} style={hoverImg} />
                     <Card.ImgOverlay>
-                      <Card.Title>Card title</Card.Title>
-                      <Card.Text>
-                        This is a longer card with supporting text below as a
-                        natural lead-in to additional content. This content is a
-                        little bit longer.
-                      </Card.Text>
+                      <Badge bg="warning" text="dark">
+                        {e.genre}
+                      </Badge>
+                      <Card.Title
+                        style={{
+                          position: "absolute",
+                          bottom: "0",
+                          color: "white",
+                          textShadow: "2px 1px grey",
+                        }}
+                      >
+                        {e.title}
+                      </Card.Title>
                     </Card.ImgOverlay>
                   </Card>
                 </Col>

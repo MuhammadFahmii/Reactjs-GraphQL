@@ -1,6 +1,4 @@
-import { Container } from "react-bootstrap";
 import { useEffect, useState } from "react";
-import Header from "../header/Header";
 import Hero from "../hero/Hero";
 import PopularMovie from "../popular-movie/PopularMovie";
 export default function Home() {
@@ -20,10 +18,9 @@ export default function Home() {
     getTopTrending();
   }, []);
   return (
-    <Container>
-      <Header />
+    <>
       <Hero topTrending={topTrending} />
       <PopularMovie />
-    </Container>
+    </>
   );
 }
