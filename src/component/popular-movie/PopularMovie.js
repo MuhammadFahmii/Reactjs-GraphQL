@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Card, Row, Col, Badge } from "react-bootstrap";
+import { Card, Col, Badge } from "react-bootstrap";
+import { useNavigate } from "react-router";
 
 export default function PopularMovie() {
   const [trendingWeek, setTrendingWeek] = useState();
@@ -81,6 +82,7 @@ export default function PopularMovie() {
       name: "Western",
     },
   ];
+  const navigate = useNavigate("");
 
   useEffect(() => {
     const API_KEY = "bb3fb3b2c47fd1ac46c54121cec5a620";
@@ -119,9 +121,7 @@ export default function PopularMovie() {
     hoverImg = { filter: "brightness(50%)" };
   }
 
-  const handleOnClick = (id) => {
-    console.log(id);
-  };
+  const handleOnClick = (id) => navigate(`/detail-movie/${id}`);
 
   return (
     <>
@@ -133,46 +133,42 @@ export default function PopularMovie() {
       >
         Popular Movies this Week
       </h1>
-      <Row xs={1} className="g-4">
-        {Array.from({ length: 1 }).map((_, idx) => (
-          <Col
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-            }}
-          >
-            {trendingWeek?.map((e, i) => {
-              return (
-                <Col className="mx-4 my-2">
-                  <Card
-                    onMouseEnter={toogleHover}
-                    onMouseLeave={toogleHover}
-                    onClick={() => handleOnClick(e.id)}
-                    style={{ border: "none", cursor: "pointer" }}
-                  >
-                    <Card.Img variant="down" src={e.img} style={hoverImg} />
-                    <Card.ImgOverlay>
-                      <Badge bg="warning" text="dark">
-                        {e.genre}
-                      </Badge>
-                      <Card.Title
-                        style={{
-                          position: "absolute",
-                          bottom: "0",
-                          color: "white",
-                          textShadow: "2px 1px grey",
-                        }}
-                      >
-                        {e.title}
-                      </Card.Title>
-                    </Card.ImgOverlay>
-                  </Card>
-                </Col>
-              );
-            })}
-          </Col>
-        ))}
-      </Row>
+      <Col
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+        }}
+      >
+        {trendingWeek?.map((e, i) => {
+          return (
+            <Card
+              key={i}
+              className="mx-4 my-3"
+              onMouseEnter={toogleHover}
+              onMouseLeave={toogleHover}
+              onClick={() => handleOnClick(e.id)}
+              style={{ border: "none", cursor: "pointer" }}
+            >
+              <Card.Img variant="down" src={e.img} style={hoverImg} />
+              <Card.ImgOverlay>
+                <Badge bg="warning" text="dark">
+                  {e.genre}
+                </Badge>
+                <Card.Title
+                  style={{
+                    position: "absolute",
+                    bottom: "0",
+                    color: "white",
+                    textShadow: "2px 1px grey",
+                  }}
+                >
+                  {e.title}
+                </Card.Title>
+              </Card.ImgOverlay>
+            </Card>
+          );
+        })}
+      </Col>
     </>
   );
 }
