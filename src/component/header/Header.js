@@ -15,9 +15,7 @@ export default function Header() {
     setUserActive(user);
   }, [user]);
 
-  const handleLogout = () => {
-    setUserActive(false);
-  };
+  const handleLogout = () => setUserActive(false);
 
   return (
     <Navbar variant="dark" expand="lg">
@@ -46,8 +44,8 @@ export default function Header() {
             <FormControl
               type="search"
               placeholder="Search"
-              className="me-2"
-              aria-label="Search"
+              className="me-2 mt-1"
+              style={{ height: "30px" }}
             />
             <MdSearch style={{ marginLeft: "-50px", fontSize: "40px" }} />
           </Form>

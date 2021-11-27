@@ -37,7 +37,7 @@ export default function SignUp() {
     });
   };
 
-  if (loadingInsert) return <h1 style={{ color: "white" }}>Harap Tunggu</h1>;
+  if (loadingInsert) return <h1>Harap Tunggu</h1>;
 
   return (
     <div id="div-auth" className="row">

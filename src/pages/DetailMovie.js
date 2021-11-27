@@ -1,10 +1,23 @@
 import { useNavigate, useParams } from "react-router";
-import { Container, Row, Col, Image } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Image,
+  Modal,
+  Button,
+  Form,
+} from "react-bootstrap";
 import { useEffect, useState } from "react";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/client";
-import { useSelector } from "react-redux";
 import GetAllComments from "../hooks/GetAllComments";
+import FormatDate from "../helper/FormatDate";
+import GetUserActive from "../hooks/GetUserActive";
+import InsertComment from "../hooks/InsertComment";
+import DeleteComment from "../hooks/DeleteComment";
+import GetCommentById from "../hooks/GetCommentById";
+import UpdateComment from "../hooks/UpdateComment";
 
 const insert = gql`
   mutation MyMutation(
@@ -30,47 +43,70 @@ const insert = gql`
 
 export default function DetailMovie() {
   const { id_movie } = useParams();
-  const API_KEY = "bb3fb3b2c47fd1ac46c54121cec5a620";
-  const urlDetail = `https://api.themoviedb.org/3/movie/${id_movie}?api_key=${API_KEY}`;
   const [detailMovie, setDetailMovie] = useState();
+  const [newComment, setNewComment] = useState();
+  const [comment, setComment] = useState();
+  const [show, setShow] = useState(false);
+  const { id_user, username } = GetUserActive();
   const { getAllComments, allComments, loadingAllComments, errorAllComments } =
     GetAllComments();
+  const { insertComment, insertCommentLoading, insertCommentError } =
+    InsertComment();
+  const {
+    getCommentById,
+    getCommentByIdData,
+    getCommentByIdLoading,
+    getCommentByIdError,
+  } = GetCommentById();
+  const { deleteComment, deleteCommentLoading, deleteCommentError } =
+    DeleteComment();
+  const { updateComment, updateCommentLoading, updateCommentError } =
+    UpdateComment();
   const [
     insertFavourite,
     { data: dataInsert, loading: loadingInsertFavourite },
   ] = useMutation(insert);
-  const id_user = useSelector((state) => {
-    if (state.userActive.users.id !== "") return state.userActive.users.id;
-  });
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (id_movie) {
+      const API_KEY = "bb3fb3b2c47fd1ac46c54121cec5a620";
+      const urlDetail = `https://api.themoviedb.org/3/movie/${id_movie}?api_key=${API_KEY}`;
+      const getDetail = async () => {
+        const response = await fetch(urlDetail);
+        const result = await response.json();
+        setDetailMovie(result);
+      };
+      getDetail();
+      getAllComments({
+        variables: {
+          id_movie,
+        },
+      });
+    }
     if (dataInsert) {
       alert("Success");
       navigate(`/favourite-movie/${id_user}`, { replace: true });
     }
-  }, [dataInsert, navigate]);
-  useEffect(() => {
-    const getDetail = async () => {
-      const response = await fetch(urlDetail);
-      const result = await response.json();
-      setDetailMovie(result);
-    };
-    getDetail();
-    getAllComments({
-      variables: {
-        id_movie,
-      },
-    });
-  }, []);
+  }, [
+    getAllComments,
+    id_movie,
+    dataInsert,
+    navigate,
+    id_user,
+    getCommentByIdData,
+  ]);
 
   let genreArr = [];
   detailMovie?.genres?.map(({ name }) => genreArr.push(name));
 
-  const handleOnClick = (e) => {
-    if (e.target.innerHTML == "Login to add favourite") {
+  const handleOnClick = (e, props = null) => {
+    if (
+      e.target.innerHTML === "Login to add favourite" ||
+      e.target.innerHTML === "Login to add comment"
+    ) {
       navigate("/sign-in");
-    } else {
+    } else if (e.target.innerHTML === "Add to favourite") {
       insertFavourite({
         variables: {
           id_user,
@@ -80,15 +116,90 @@ export default function DetailMovie() {
           title: detailMovie.title,
         },
       });
+      alert("success");
+    } else if (e.target.innerHTML === "Add comment") {
+      insertComment({
+        variables: {
+          id_user,
+          id_movie: detailMovie.id,
+          comment: newComment,
+        },
+      });
+      alert("success");
+    } else if (e.target.innerHTML === "Delete") {
+      deleteComment({
+        variables: {
+          id: props,
+        },
+      });
+      alert("success");
+    } else if (e.target.innerHTML === "Update") {
+      getCommentById({
+        variables: {
+          id: props,
+        },
+      });
+      setComment({
+        ...comment,
+        id: props,
+      });
+      setShow(true);
+    } else if (e.target.innerHTML === "Close") {
+      setShow(false);
+    } else if (e.target.innerHTML === "Save Update") {
+      updateComment({
+        variables: {
+          id: comment.id,
+          comment: comment.text,
+        },
+      });
+      alert("success");
+      setShow(false);
     }
   };
 
-  console.log(allComments);
-  if ((loadingInsertFavourite, loadingAllComments))
-    return <h1 style={{ color: "white" }}>Harap tunggu</h1>;
+  /**
+   * HandleOnChange
+   * @param {*} e
+   */
+  const handleOnChange = (e) => {
+    switch (e.target.name) {
+      case "new-comment":
+        setNewComment(e.target.value);
+        break;
+      case "comment":
+        setComment({
+          ...comment,
+          text: e.target.value,
+        });
+        break;
+      default:
+        break;
+    }
+  };
+
+  if (
+    loadingInsertFavourite ||
+    loadingAllComments ||
+    insertCommentLoading ||
+    deleteCommentLoading ||
+    getCommentByIdLoading ||
+    updateCommentLoading
+  ) {
+    return <h1>Harap tunggu</h1>;
+  } else if (
+    errorAllComments ||
+    insertCommentError ||
+    deleteCommentError ||
+    getCommentByIdError ||
+    updateCommentError
+  ) {
+    return <h1>{updateCommentError}</h1>;
+  }
+
   return (
     <Container className="my-3">
-      {detailMovie ? (
+      {detailMovie && (
         <>
           <Row className="text-white">
             <Col>
@@ -118,14 +229,39 @@ export default function DetailMovie() {
             {detailMovie.overview}
           </h4>
         </>
-      ) : (
-        <h1>Data Not Found</h1>
       )}
       <div>
         <div className="row" style={{ width: "102%" }}>
           <div className="col-md-12">
             <div className="card">
               <div className="card-body">
+                <div className="row">
+                  <div className="col-10">
+                    <div className="input-group">
+                      {id_user && (
+                        <textarea
+                          className="form-control"
+                          name="new-comment"
+                          onChange={(e) => handleOnChange(e)}
+                        ></textarea>
+                      )}
+                      <div className="input-group-prepend">
+                        {id_user && (
+                          <span className="input-group-text">
+                            Comment as {username}
+                          </span>
+                        )}
+                        <button
+                          className="btn btn-warning"
+                          onClick={(e) => handleOnClick(e)}
+                        >{`${
+                          id_user ? "Add comment" : "Login to add comment"
+                        }`}</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col"></div>
+                </div>
                 <h4 className="card-title">Recent Comments</h4>
                 <h6 className="card-subtitle">
                   Latest Comments section by users
@@ -134,15 +270,33 @@ export default function DetailMovie() {
               <div>
                 {allComments?.map((e) => {
                   return (
-                    <div className="d-flex flex-row comment-row mx-3">
-                      <div className="comment-text w-100">
+                    <div className="mx-3 mb-3" key={e.id}>
+                      <div>
                         <h5>{e.user.username}</h5>
-                        <div className="comment-footer">
-                          {" "}
-                          <span className="date">April 14, 2019</span>{" "}
+                        <div className=" d-flex flex-row">
+                          <span>{FormatDate(e.created_at)}</span>
+                          {e.user.id === id_user && (
+                            <>
+                              <span
+                                className="badge bg-danger mx-2"
+                                style={{ cursor: "pointer" }}
+                                onClick={(i) => handleOnClick(i, e.id)}
+                              >
+                                Delete
+                              </span>
+                              <span
+                                className="badge bg-warning"
+                                style={{ cursor: "pointer" }}
+                                onClick={(i) => handleOnClick(i, e.id)}
+                              >
+                                Update
+                              </span>
+                            </>
+                          )}
                         </div>
-                        <p className="m-b-5 m-t-10">{e.comment}</p>
+                        <p>{e.comment}</p>
                       </div>
+                      <hr />
                     </div>
                   );
                 })}
@@ -151,6 +305,30 @@ export default function DetailMovie() {
           </div>
         </div>
       </div>
+      <Modal show={show} onHide={() => setShow(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Modal heading</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group className="mb-3">
+            <Form.Label>Comment</Form.Label>
+            <Form.Control
+              type="text"
+              name="comment"
+              defaultValue={getCommentByIdData && getCommentByIdData}
+              onChange={(e) => handleOnChange(e)}
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={(e) => handleOnClick(e)}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={(e) => handleOnClick(e)}>
+            Save Update
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 }

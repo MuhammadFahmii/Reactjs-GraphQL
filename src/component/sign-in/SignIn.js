@@ -32,7 +32,7 @@ export default function SignIn() {
       alert("welcome");
       navigate("/", { replace: true });
     }
-  }, [dataByUsername, navigate]);
+  }, [dataByUsername, navigate, dispatch]);
 
   const onChange = (e) => {
     setData({
@@ -49,8 +49,7 @@ export default function SignIn() {
       },
     });
   };
-  if (loadingByUsername)
-    return <h1 style={{ color: "white" }}>Harap tunggu</h1>;
+  if (loadingByUsername) return <h1>Harap tunggu</h1>;
 
   return (
     <>
@@ -58,7 +57,7 @@ export default function SignIn() {
         <div className="col-md">
           <div className="logo mb-3 mt-2">
             <div className="col-md-12 text-center">
-              <h1 id="login-title">Login</h1>
+              <h1 id="signin-title">Sign In</h1>
             </div>
           </div>
           <form className="myform">
