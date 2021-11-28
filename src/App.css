@@ -1,3 +1,22 @@
 body {
   background-color: black;
 }
+h1 {
+  color: white;
+}
+
+/* Sign In */
+@import url("https://fonts.googleapis.com/css?family=Kaushan+Script");
+
+#signin-title,
+#signup-title {
+  color: black;
+  font-family: "Kaushan Script", cursive;
+}
+
+#div-auth {
+  background-color: white;
+  border-radius: 10px;
+  margin: 50px auto;
+  width: 35%;
+}

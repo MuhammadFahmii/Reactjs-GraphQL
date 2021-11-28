@@ -4,13 +4,19 @@ import { MdSearch } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 export default function Header() {
-  const user = useSelector((state) => {
+  let user = useSelector((state) => {
     if (state.userActive.users.username !== "") return state.userActive.users;
   });
-  const [userActive, setUserActive] = useState();
+  const id_user = useSelector((state) => {
+    if (state.userActive.users.id !== "") return state.userActive.users.id;
+  });
+  const [userActive, setUserActive] = useState(false);
   useEffect(() => {
     setUserActive(user);
   }, [user]);
+
+  const handleLogout = () => setUserActive(false);
+
   return (
     <Navbar variant="dark" expand="lg">
       <Navbar.Toggle aria-controls="navbarScroll" />
@@ -38,8 +44,8 @@ export default function Header() {
             <FormControl
               type="search"
               placeholder="Search"
-              className="me-2"
-              aria-label="Search"
+              className="me-2 mt-1"
+              style={{ height: "30px" }}
             />
             <MdSearch style={{ marginLeft: "-50px", fontSize: "40px" }} />
           </Form>
@@ -48,9 +54,13 @@ export default function Header() {
               title={userActive.username}
               id="navbarScrollingDropdown"
             >
-              <NavDropdown.Item>My Favourite</NavDropdown.Item>
-              <NavDropdown.Item>Setting</NavDropdown.Item>
-              <NavDropdown.Item>Logout</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to={`/favourite-movie/${id_user}`}>
+                My Favourite
+              </NavDropdown.Item>
+              <NavDropdown.Item as={Link} to={"/setting"}>
+                Setting
+              </NavDropdown.Item>
+              <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
             </NavDropdown>
           ) : (
             <Nav.Link as={Link} to="/sign-in">

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { addActive } from "../stores/UserSlices";
+import { Link } from "react-router-dom";
 
 const queryGetByUsername = gql`
   query MyQuery($username: String!, $password: String!) {
@@ -13,23 +14,25 @@ const queryGetByUsername = gql`
         _and: { password: { _eq: $password } }
       }
     ) {
+      id
       username
     }
   }
 `;
 
 export default function SignIn() {
-  const navigate = useNavigate();
   const [getByUsername, { data: dataByUsername, loading: loadingByUsername }] =
     useLazyQuery(queryGetByUsername);
-
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const [data, setData] = useState();
-
   useEffect(() => {
-    if (dataByUsername) dispatch(addActive(dataByUsername.movie_app_users[0]));
-  }, [dataByUsername]);
+    if (dataByUsername?.movie_app_users.length > 0) {
+      dispatch(addActive(dataByUsername.movie_app_users[0]));
+      alert("welcome");
+      navigate("/", { replace: true });
+    }
+  }, [dataByUsername, navigate, dispatch]);
 
   const onChange = (e) => {
     setData({
@@ -46,26 +49,18 @@ export default function SignIn() {
       },
     });
   };
-
   if (loadingByUsername) return <h1>Harap tunggu</h1>;
+
   return (
     <>
-      <div
-        className="row"
-        style={{
-          backgroundColor: "white",
-          borderRadius: "10px",
-          margin: "50px auto",
-          width: "500px",
-        }}
-      >
+      <div id="div-auth" className="row">
         <div className="col-md">
           <div className="logo mb-3 mt-2">
             <div className="col-md-12 text-center">
-              <h1>Login</h1>
+              <h1 id="signin-title">Sign In</h1>
             </div>
           </div>
-          <form>
+          <form className="myform">
             <div className="form-group">
               <label htmlFor="username">Username</label>
               <input
@@ -73,7 +68,7 @@ export default function SignIn() {
                 name="username"
                 className="form-control"
                 id="username"
-                placeholder="Enter username"
+                placeholder="Enter Username"
                 onChange={onChange}
               />
             </div>
@@ -89,15 +84,7 @@ export default function SignIn() {
                 onChange={onChange}
               />
             </div>
-            <div className="form-group">
-              <p className="text-center">
-                By signing up you accept our
-                <a href="#" style={{ textDecoration: "none", margin: "0 5px" }}>
-                  Terms Of Use
-                </a>
-              </p>
-            </div>
-            <div className="col-md-12 text-center ">
+            <div className="col-md-12 text-center mt-3 mb-3">
               <button
                 type="submit"
                 className=" btn btn-block btn-primary"
@@ -109,9 +96,9 @@ export default function SignIn() {
             <div className="form-group">
               <p className="text-center">
                 Don't have account?
-                <a href="#" style={{ textDecoration: "none", margin: "0 5px" }}>
+                <Link to={"/sign-up"} style={{ margin: "0 5px" }}>
                   Sign up here
-                </a>
+                </Link>
               </p>
             </div>
           </form>
