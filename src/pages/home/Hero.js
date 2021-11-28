@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 
 export default function Hero({ topTrending }) {
   const posterPath = `https://image.tmdb.org/t/p/original${topTrending?.poster_path}`;
-  const navigate = useNavigate("");
+  const navigate = useNavigate();
   const handleOnClick = () => {
     navigate(`/detail-movie/${topTrending.id}`);
   };

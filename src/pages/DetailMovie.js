@@ -9,8 +9,6 @@ import {
   Form,
 } from "react-bootstrap";
 import { useEffect, useState } from "react";
-import gql from "graphql-tag";
-import { useMutation } from "@apollo/client";
 import GetAllComments from "../hooks/GetAllComments";
 import FormatDate from "../helper/FormatDate";
 import GetUserActive from "../hooks/GetUserActive";
@@ -18,28 +16,7 @@ import InsertComment from "../hooks/InsertComment";
 import DeleteComment from "../hooks/DeleteComment";
 import GetCommentById from "../hooks/GetCommentById";
 import UpdateComment from "../hooks/UpdateComment";
-
-const insert = gql`
-  mutation MyMutation(
-    $id_user: Int!
-    $image: String!
-    $overview: String!
-    $title: String!
-    $id_movie: Int!
-  ) {
-    insert_movie_app_favourite_movies_one(
-      object: {
-        id_user: $id_user
-        image: $image
-        overview: $overview
-        title: $title
-        id_movie: $id_movie
-      }
-    ) {
-      id
-    }
-  }
-`;
+import InsertFavouriteMovie from "../hooks/InsertFavouriteMovie";
 
 export default function DetailMovie() {
   const { id_movie } = useParams();
@@ -47,6 +24,7 @@ export default function DetailMovie() {
   const [newComment, setNewComment] = useState();
   const [comment, setComment] = useState();
   const [show, setShow] = useState(false);
+  const navigate = useNavigate();
   const { id_user, username } = GetUserActive();
   const { getAllComments, allComments, loadingAllComments, errorAllComments } =
     GetAllComments();
@@ -62,40 +40,26 @@ export default function DetailMovie() {
     DeleteComment();
   const { updateComment, updateCommentLoading, updateCommentError } =
     UpdateComment();
-  const [
-    insertFavourite,
-    { data: dataInsert, loading: loadingInsertFavourite },
-  ] = useMutation(insert);
-  const navigate = useNavigate();
+  const {
+    insertFavouriteMovie,
+    insertFavouriteMovieLoading,
+    insertFavouriteMovieError,
+  } = InsertFavouriteMovie();
 
   useEffect(() => {
-    if (id_movie) {
-      const API_KEY = "bb3fb3b2c47fd1ac46c54121cec5a620";
-      const urlDetail = `https://api.themoviedb.org/3/movie/${id_movie}?api_key=${API_KEY}`;
-      const getDetail = async () => {
-        const response = await fetch(urlDetail);
-        const result = await response.json();
-        setDetailMovie(result);
-      };
-      getDetail();
-      getAllComments({
-        variables: {
-          id_movie,
-        },
-      });
-    }
-    if (dataInsert) {
-      alert("Success");
-      navigate(`/favourite-movie/${id_user}`, { replace: true });
-    }
-  }, [
-    getAllComments,
-    id_movie,
-    dataInsert,
-    navigate,
-    id_user,
-    getCommentByIdData,
-  ]);
+    const urlDetail = `https://api.themoviedb.org/3/movie/${id_movie}?api_key=${process.env.REACT_APP_API_KEY}`;
+    const getDetail = async () => {
+      const response = await fetch(urlDetail);
+      const result = await response.json();
+      setDetailMovie(result);
+    };
+    getDetail();
+    getAllComments({
+      variables: {
+        id_movie,
+      },
+    });
+  }, [getAllComments, id_movie]);
 
   let genreArr = [];
   detailMovie?.genres?.map(({ name }) => genreArr.push(name));
@@ -107,7 +71,7 @@ export default function DetailMovie() {
     ) {
       navigate("/sign-in");
     } else if (e.target.innerHTML === "Add to favourite") {
-      insertFavourite({
+      insertFavouriteMovie({
         variables: {
           id_user,
           id_movie: detailMovie.id,
@@ -117,6 +81,7 @@ export default function DetailMovie() {
         },
       });
       alert("success");
+      navigate(`/favourite-movie/${id_user}`, { replace: true });
     } else if (e.target.innerHTML === "Add comment") {
       insertComment({
         variables: {
@@ -179,7 +144,7 @@ export default function DetailMovie() {
   };
 
   if (
-    loadingInsertFavourite ||
+    insertFavouriteMovieLoading ||
     loadingAllComments ||
     insertCommentLoading ||
     deleteCommentLoading ||
@@ -188,13 +153,14 @@ export default function DetailMovie() {
   ) {
     return <h1>Harap tunggu</h1>;
   } else if (
-    errorAllComments ||
-    insertCommentError ||
     deleteCommentError ||
+    errorAllComments ||
     getCommentByIdError ||
+    insertCommentError ||
+    insertFavouriteMovieError ||
     updateCommentError
   ) {
-    return <h1>{updateCommentError}</h1>;
+    return <h1>Terjadi kesalahan...</h1>;
   }
 
   return (
@@ -210,9 +176,9 @@ export default function DetailMovie() {
             </Col>
             <Col>
               <h3>
-                Countries: {detailMovie.production_companies[0].origin_country}
+                Countries: {detailMovie.production_companies[0]?.origin_country}
               </h3>
-              <h3>Year: {detailMovie.release_date.split("-")[0]}</h3>
+              <h3>Year: {detailMovie.release_date?.split("-")[0]}</h3>
               <h3>Category: {genreArr.join(", ")}</h3>
               <h3>Release: {detailMovie.release_date}</h3>
               <h3>Rating: {detailMovie.vote_average}</h3>

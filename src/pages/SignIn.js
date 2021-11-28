@@ -1,38 +1,23 @@
-import { useLazyQuery } from "@apollo/client";
-import gql from "graphql-tag";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { addActive } from "../stores/UserSlices";
+import { addActive } from "../component/stores/UserSlices";
 import { Link } from "react-router-dom";
-
-const queryGetByUsername = gql`
-  query MyQuery($username: String!, $password: String!) {
-    movie_app_users(
-      where: {
-        username: { _eq: $username }
-        _and: { password: { _eq: $password } }
-      }
-    ) {
-      id
-      username
-    }
-  }
-`;
+import GetUsername from "../hooks/GetUsername";
 
 export default function SignIn() {
-  const [getByUsername, { data: dataByUsername, loading: loadingByUsername }] =
-    useLazyQuery(queryGetByUsername);
+  const { getUsername, getUsernameData, getUsernameLoading, getUsernameError } =
+    GetUsername();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [data, setData] = useState();
   useEffect(() => {
-    if (dataByUsername?.movie_app_users.length > 0) {
-      dispatch(addActive(dataByUsername.movie_app_users[0]));
+    if (getUsernameData?.length > 0) {
+      dispatch(addActive(getUsernameData[0]));
       alert("welcome");
       navigate("/", { replace: true });
     }
-  }, [dataByUsername, navigate, dispatch]);
+  }, [getUsernameData, navigate, dispatch]);
 
   const onChange = (e) => {
     setData({
@@ -42,14 +27,19 @@ export default function SignIn() {
   };
 
   const handleGetByUsername = () => {
-    getByUsername({
+    getUsername({
       variables: {
         username: data.username,
         password: data.password,
       },
     });
   };
-  if (loadingByUsername) return <h1>Harap tunggu</h1>;
+
+  if (getUsernameLoading) {
+    return <h1>Harap tunggu</h1>;
+  } else if (getUsernameError) {
+    return <h1>Terjadi kesalahan</h1>;
+  }
 
   return (
     <>
