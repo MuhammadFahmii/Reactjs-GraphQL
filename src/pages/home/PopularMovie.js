@@ -10,9 +10,8 @@ export default function PopularMovie() {
 
   useEffect(() => {
     const genre = Genre;
-    const API_KEY = "bb3fb3b2c47fd1ac46c54121cec5a620";
     const url = `
-    https://api.themoviedb.org/3/trending/movie/week?api_key=${API_KEY}`;
+    https://api.themoviedb.org/3/trending/movie/week?api_key=${process.env.REACT_APP_API_KEY}`;
     const getTrendingWeek = async () => {
       const response = await fetch(url);
       const { results } = await response.json();

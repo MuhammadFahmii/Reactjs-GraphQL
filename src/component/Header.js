@@ -21,7 +21,6 @@ export default function Header() {
     <Navbar variant="dark" expand="lg">
       <Navbar.Toggle aria-controls="navbarScroll" />
       <Navbar.Collapse
-        id="navbarScroll"
         style={{
           justifyContent: "space-evenly",
         }}

@@ -28,3 +28,25 @@ export const MutationUpdateComment = gql`
     }
   }
 `;
+
+export const MutationInsertFavouriteMovie = gql`
+  mutation MutationInsertFavouriteMovie(
+    $id_user: Int!
+    $image: String!
+    $overview: String!
+    $title: String!
+    $id_movie: Int!
+  ) {
+    insert_movie_app_favourite_movies_one(
+      object: {
+        id_user: $id_user
+        image: $image
+        overview: $overview
+        title: $title
+        id_movie: $id_movie
+      }
+    ) {
+      id
+    }
+  }
+`;

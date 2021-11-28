@@ -3,7 +3,7 @@ import gql from "graphql-tag";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { addActive } from "../stores/UserSlices";
+import { addActive } from "../component/stores/UserSlices";
 import { Link } from "react-router-dom";
 
 const queryGetByUsername = gql`
