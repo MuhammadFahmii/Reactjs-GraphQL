@@ -42,7 +42,6 @@ export default function DetailMovie() {
     UpdateComment();
   const {
     insertFavouriteMovie,
-    insertFavouriteMovieData,
     insertFavouriteMovieLoading,
     insertFavouriteMovieError,
   } = InsertFavouriteMovie();
@@ -60,18 +59,7 @@ export default function DetailMovie() {
         id_movie,
       },
     });
-    if (insertFavouriteMovieData) {
-      alert("Success");
-      navigate(`/favourite-movie/${id_user}`, { replace: true });
-    }
-  }, [
-    getAllComments,
-    id_movie,
-    id_user,
-    insertFavouriteMovie,
-    insertFavouriteMovieData,
-    navigate,
-  ]);
+  }, [getAllComments, id_movie]);
 
   let genreArr = [];
   detailMovie?.genres?.map(({ name }) => genreArr.push(name));
@@ -93,6 +81,7 @@ export default function DetailMovie() {
         },
       });
       alert("success");
+      navigate(`/favourite-movie/${id_user}`, { replace: true });
     } else if (e.target.innerHTML === "Add comment") {
       insertComment({
         variables: {
@@ -187,9 +176,9 @@ export default function DetailMovie() {
             </Col>
             <Col>
               <h3>
-                Countries: {detailMovie.production_companies[0].origin_country}
+                Countries: {detailMovie.production_companies[0]?.origin_country}
               </h3>
-              <h3>Year: {detailMovie.release_date.split("-")[0]}</h3>
+              <h3>Year: {detailMovie.release_date?.split("-")[0]}</h3>
               <h3>Category: {genreArr.join(", ")}</h3>
               <h3>Release: {detailMovie.release_date}</h3>
               <h3>Rating: {detailMovie.vote_average}</h3>

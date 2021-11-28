@@ -8,6 +8,7 @@ import FavouriteMovie from "./pages/FavouriteMovie";
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
 import Home from "./pages/home/Home";
+import ResultSearchMovie from "./pages/ResultSearchMovie";
 
 function App() {
   return (
@@ -21,6 +22,10 @@ function App() {
             <Route
               path="/favourite-movie/:id_user"
               element={<FavouriteMovie />}
+            />
+            <Route
+              path="/result-search-movie"
+              element={<ResultSearchMovie />}
             />
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />

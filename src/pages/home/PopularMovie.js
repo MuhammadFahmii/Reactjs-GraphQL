@@ -15,9 +15,9 @@ export default function PopularMovie() {
     const getTrendingWeek = async () => {
       const response = await fetch(url);
       const { results } = await response.json();
-      let best5 = [];
+      let best = [];
       results?.forEach((e) => {
-        if (best5.length === 10) return setTrendingWeek(best5);
+        if (best.length === 10) return setTrendingWeek(best);
         genre.forEach(({ id, name }) => {
           if (id === e.genre_ids[0]) {
             const newData = {
@@ -26,7 +26,7 @@ export default function PopularMovie() {
               title: e.title,
               img: `https://image.tmdb.org/t/p/w200/${e.poster_path}`,
             };
-            best5.push(newData);
+            best.push(newData);
           }
         });
       });
@@ -58,6 +58,7 @@ export default function PopularMovie() {
         style={{
           display: "flex",
           flexWrap: "wrap",
+          justifyContent: "space-around",
         }}
       >
         {trendingWeek?.map((e, i) => {

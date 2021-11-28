@@ -1,15 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialValue = {
-  id: "",
-  username: "",
-  password: "",
-};
-
 const UserSlices = createSlice({
   name: "user",
   initialState: {
-    users: initialValue,
+    users: "",
   },
   reducers: {
     addActive: (state, action) => {

@@ -1,41 +1,29 @@
-import { useQuery } from "@apollo/client";
-import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Card, Col, Image, Row } from "react-bootstrap";
-import gql from "graphql-tag";
-const getFavouriteMovie = gql`
-  query MyQuery($id: Int!) {
-    movie_app_favourite_movies(where: { id_user: { _eq: $id } }) {
-      image
-      overview
-      title
-      id_movie
-    }
-  }
-`;
+import GetFavouriteMovie from "../hooks/GetFavouriteMovie";
+
 export default function FavouriteMovie() {
   const { id_user } = useParams();
-  const { data: dataFavourite, loading: loadingDataFavourite } = useQuery(
-    getFavouriteMovie,
-    {
-      variables: { id: id_user },
-    }
-  );
-  const [data, setData] = useState();
-  useEffect(() => {
-    if (dataFavourite) setData(dataFavourite.movie_app_favourite_movies);
-  }, [dataFavourite]);
   const navigate = useNavigate();
+  const {
+    getFavouriteMovieData,
+    getFavouriteMovieLoading,
+    getFavouriteMovieError,
+  } = GetFavouriteMovie(id_user);
 
   const handleOnClick = (id) => navigate(`/detail-movie/${id}`);
 
-  if (loadingDataFavourite) return <h1>Harap Tunggu</h1>;
+  if (getFavouriteMovieLoading) {
+    return <h1>Harap tunggu</h1>;
+  } else if (getFavouriteMovieError) {
+    return <h1>Terjadi kesalahan</h1>;
+  }
   return (
     <>
       <h1 style={{ textAlign: "center", color: "white" }}>
         My Favourite Movie
       </h1>
-      {data?.map((e, i) => {
+      {getFavouriteMovieData?.map((e, i) => {
         return (
           <Row
             key={i}
