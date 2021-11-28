@@ -1,15 +1,13 @@
-import { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { useState, useEffect } from "react";
 import PassengerInput from "./PassengerInput";
 import ListPassenger from "./ListPassenger";
 import Header from "./Header";
 import gql from "graphql-tag";
-import { useLazyQuery, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation, useSubscription } from "@apollo/client";
 import LoadingSvg from "./LoadingSvg";
-import { useEffect } from "react/cjs/react.development";
 
 const getPengunjung = gql`
-  query MyQuery {
+  subscription MySubscription {
     pengunjung {
       id
       nama
@@ -27,10 +25,40 @@ const queryCariById = gql`
     }
   }
 `;
+const queryInsertPengunjung = gql`
+  mutation MyMutation($object: pengunjung_insert_input = {}) {
+    insert_pengunjung_one(object: $object) {
+      nama
+      umur
+      jenis_kelamin
+    }
+  }
+`;
+
+const queryDeletePengunjung = gql`
+  mutation queryDeletePengunjung($id: Int!) {
+    delete_pengunjung_by_pk(id: $id) {
+      nama
+    }
+  }
+`;
+
 export default function Home() {
-  const { data, loading: loadingAllData, error } = useQuery(getPengunjung);
+  const {
+    data,
+    loading: loadingAllData,
+    error,
+  } = useSubscription(getPengunjung);
   const [cariById, { data: dataById, loading: loadingById }] =
     useLazyQuery(queryCariById);
+  const [insertPengunjung, { loading: loadingInsert }] = useMutation(
+    queryInsertPengunjung,
+    { refetchQueries: [getPengunjung] }
+  );
+  const [deletePengunjung, { loading: loadingDelete }] = useMutation(
+    queryDeletePengunjung,
+    { refetchQueries: [getPengunjung] }
+  );
 
   const [pengunjung, setPengunjung] = useState("");
   const [id, setId] = useState("");
@@ -42,21 +70,31 @@ export default function Home() {
   useEffect(() => {
     if (data) setPengunjung(data);
   }, [data]);
-  const hapusPengunjung = (id) => {};
+
+  const hapusPengunjung = (id) => {
+    deletePengunjung({
+      variables: { id },
+    });
+  };
 
   const tambahPengunjung = (newUser) => {
-    const newData = {
-      id: uuidv4(),
-      ...newUser,
-    };
-    setPengunjung([...pengunjung, newData]);
+    insertPengunjung({
+      variables: {
+        object: newUser,
+      },
+    });
   };
 
   const cariPengunjung = () => {
     cariById({ variables: { id } });
   };
 
-  if (loadingAllData) return <LoadingSvg />;
+  const editPengunjung = (id) => {
+    cariById({ variables: { id } });
+  };
+
+  if (loadingAllData || loadingInsert || loadingDelete || loadingById)
+    return <LoadingSvg />;
   if (error) return error;
 
   return (
@@ -70,8 +108,13 @@ export default function Home() {
         data={pengunjung}
         loadingById={loadingById}
         hapusPengunjung={hapusPengunjung}
+        editPengunjung={editPengunjung}
       />
-      <PassengerInput tambahPengunjung={tambahPengunjung} />
+      <PassengerInput
+        tambahPengunjung={tambahPengunjung}
+        data={pengunjung !== undefined && pengunjung}
+        loadingById={loadingById}
+      />
     </div>
   );
 }
