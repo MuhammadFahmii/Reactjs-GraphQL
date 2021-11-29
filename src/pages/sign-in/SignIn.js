@@ -27,13 +27,22 @@ export default function SignIn() {
     });
   };
 
-  const handleGetByUsername = () => {
-    getUsername({
-      variables: {
-        username: data.username,
-        password: data.password,
-      },
-    });
+  const handleOnClick = (e) => {
+    e.preventDefault();
+    if (
+      data === undefined ||
+      data.username === undefined ||
+      data.password === undefined
+    ) {
+      alert("Pastikan semua data terisi");
+    } else {
+      getUsername({
+        variables: {
+          username: data.username,
+          password: data.password,
+        },
+      });
+    }
   };
 
   if (getUsernameLoading) {
@@ -51,7 +60,7 @@ export default function SignIn() {
               <h1 id="signin-title">Sign In</h1>
             </div>
           </div>
-          <form className="myform">
+          <form>
             <div className="form-group">
               <label htmlFor="username">Username</label>
               <input
@@ -79,7 +88,7 @@ export default function SignIn() {
               <button
                 type="submit"
                 className=" btn btn-block btn-primary"
-                onClick={handleGetByUsername}
+                onClick={(e) => handleOnClick(e)}
               >
                 Login
               </button>
