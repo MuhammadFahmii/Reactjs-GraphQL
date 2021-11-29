@@ -4,6 +4,9 @@ body {
 h1 {
   color: white;
 }
+a {
+  text-decoration: none;
+}
 
 /* Sign In */
 @import url("https://fonts.googleapis.com/css?family=Kaushan+Script");

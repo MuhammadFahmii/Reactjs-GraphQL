@@ -1,9 +1,20 @@
 import { useMutation } from "@apollo/client";
 import { MutationInsertFavouriteMovie } from "../graphql/Mutation";
+import { QueryGetFavouriteMovie } from "../graphql/Query";
 
-export default function InsertFavouriteMovie() {
+export default function InsertFavouriteMovie(id_movie) {
   const [insertFavouriteMovie, { data, loading, error }] = useMutation(
-    MutationInsertFavouriteMovie
+    MutationInsertFavouriteMovie,
+    {
+      refetchQueries: [
+        {
+          query: QueryGetFavouriteMovie,
+          variables: {
+            id: id_movie,
+          },
+        },
+      ],
+    }
   );
   return {
     insertFavouriteMovie,

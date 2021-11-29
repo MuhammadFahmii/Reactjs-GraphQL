@@ -2,9 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { ApolloProvider } from "@apollo/client";
-import client from "./ApolloClient";
+import client from "./apps/ApolloClient";
 import App from "./App";
-import Store from "./stores/Store";
+import Store from "./apps/Store";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 

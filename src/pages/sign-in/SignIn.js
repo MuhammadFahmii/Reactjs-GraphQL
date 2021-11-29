@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
-import GetUsername from "../hooks/GetUsername";
+import GetUsername from "../../hooks/GetUsername";
 import { setCookie } from "nookies";
 
 export default function SignIn() {
-  const { getUsername, getUsernameData, getUsernameLoading, getUsernameError } =
-    GetUsername();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { getUsername, getUsernameData, getUsernameLoading, getUsernameError } =
+    GetUsername();
   const [data, setData] = useState();
   useEffect(() => {
     if (getUsernameData?.length > 0) {
@@ -20,7 +20,7 @@ export default function SignIn() {
     }
   }, [getUsernameData, navigate, dispatch]);
 
-  const onChange = (e) => {
+  const handleOnChange = (e) => {
     setData({
       ...data,
       [e.target.name]: e.target.value,
@@ -60,7 +60,7 @@ export default function SignIn() {
                 className="form-control"
                 id="username"
                 placeholder="Enter Username"
-                onChange={onChange}
+                onChange={handleOnChange}
               />
             </div>
             <div className="form-group">
@@ -72,7 +72,7 @@ export default function SignIn() {
                 className="form-control"
                 aria-describedby="emailHelp"
                 placeholder="Enter Password"
-                onChange={onChange}
+                onChange={handleOnChange}
               />
             </div>
             <div className="col-md-12 text-center mt-3 mb-3">

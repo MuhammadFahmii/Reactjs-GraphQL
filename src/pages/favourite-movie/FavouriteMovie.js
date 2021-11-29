@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router";
 import { Card, Col, Image, Row } from "react-bootstrap";
-import GetFavouriteMovie from "../hooks/GetFavouriteMovie";
+import GetFavouriteMovie from "../../hooks/GetFavouriteMovie";
 
 export default function FavouriteMovie() {
   const { id_user } = useParams();

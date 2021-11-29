@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router";
-import InsertUser from "../hooks/InsertUser";
+import InsertUser from "../../hooks/InsertUser";
 
 export default function SignUp() {
   const { insertUser, insertUserData, insertUserLoading, insertUserError } =
