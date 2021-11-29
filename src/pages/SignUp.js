@@ -1,26 +1,16 @@
-import { useMutation } from "@apollo/client";
-import gql from "graphql-tag";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router";
+import InsertUser from "../hooks/InsertUser";
 
-const InsertUser = gql`
-  mutation MyMutation($username: String!, $password: String!) {
-    insert_movie_app_users_one(
-      object: { username: $username, password: $password }
-    ) {
-      id
-    }
-  }
-`;
 export default function SignUp() {
-  const [insertUser, { data: dataInsert, loading: loadingInsert }] =
-    useMutation(InsertUser);
+  const { insertUser, insertUserData, insertUserLoading, insertUserError } =
+    InsertUser();
   const [data, setData] = useState();
   const navigate = useNavigate();
   useEffect(() => {
-    if (dataInsert) navigate("/sign-in", { replace: true });
-  }, [dataInsert, navigate]);
+    if (insertUserData) navigate("/sign-in", { replace: true });
+  }, [insertUserData, navigate]);
 
   const handleOnChange = (e) => {
     setData({
@@ -37,7 +27,11 @@ export default function SignUp() {
     });
   };
 
-  if (loadingInsert) return <h1>Harap Tunggu</h1>;
+  if (insertUserLoading) {
+    return <h1>Harap Tunggu</h1>;
+  } else if (insertUserError) {
+    return <h1>Terjadi Kesalahan</h1>;
+  }
 
   return (
     <div id="div-auth" className="row">

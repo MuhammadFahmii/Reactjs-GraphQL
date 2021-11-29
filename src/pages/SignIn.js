@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { addActive } from "../component/stores/UserSlices";
 import { Link } from "react-router-dom";
 import GetUsername from "../hooks/GetUsername";
+import { setCookie } from "nookies";
 
 export default function SignIn() {
   const { getUsername, getUsernameData, getUsernameLoading, getUsernameError } =
@@ -13,7 +13,8 @@ export default function SignIn() {
   const [data, setData] = useState();
   useEffect(() => {
     if (getUsernameData?.length > 0) {
-      dispatch(addActive(getUsernameData[0]));
+      setCookie(null, "id_user", getUsernameData[0].id);
+      setCookie(null, "username", getUsernameData[0].username);
       alert("welcome");
       navigate("/", { replace: true });
     }

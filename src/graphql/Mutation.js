@@ -54,3 +54,13 @@ export const MutationInsertFavouriteMovie = gql`
     }
   }
 `;
+
+export const MutationInsertUser = gql`
+  mutation MutationInsertUser($username: String!, $password: String!) {
+    insert_movie_app_users_one(
+      object: { username: $username, password: $password }
+    ) {
+      id
+    }
+  }
+`;

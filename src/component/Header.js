@@ -1,18 +1,13 @@
 import { Navbar, Nav, NavDropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useState } from "react";
-import { resultSearchMovie } from "./stores/MovieSlices";
+import { resultSearchMovie } from "../stores/MovieSlices";
 import { Genre } from "../constant/Genre";
+import { destroyCookie, parseCookies } from "nookies";
 export default function Header() {
-  const username = useSelector((state) => {
-    if (state.userActive.users.username !== "")
-      return state.userActive.users.username;
-  });
-  const id_user = useSelector((state) => {
-    if (state.userActive.users.id !== "") return state.userActive.users.id;
-  });
+  const { id_user, username } = parseCookies();
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -43,6 +38,19 @@ export default function Header() {
       setSearch("");
     }
   };
+  const handleOnClick = (e) => {
+    switch (e.target.innerHTML) {
+      case "Logout":
+        destroyCookie(null, "id_user");
+        destroyCookie(null, "username");
+        navigate("/");
+        alert("Success logout");
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <Navbar variant="dark" expand="lg">
       <Navbar.Toggle aria-controls="navbarScroll" />
@@ -61,7 +69,6 @@ export default function Header() {
             <NavDropdown.Item>Adventure</NavDropdown.Item>
             <NavDropdown.Item>Comedy</NavDropdown.Item>
           </NavDropdown>
-          <Nav.Link>Contact Us</Nav.Link>
           <input
             type="search"
             placeholder="Search"
@@ -84,7 +91,9 @@ export default function Header() {
               <NavDropdown.Item as={Link} to={"/setting"}>
                 Setting
               </NavDropdown.Item>
-              <NavDropdown.Item>Logout</NavDropdown.Item>
+              <NavDropdown.Item onClick={(e) => handleOnClick(e)}>
+                Logout
+              </NavDropdown.Item>
             </NavDropdown>
           ) : (
             <Nav.Link as={Link} to="/sign-in">

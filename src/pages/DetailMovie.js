@@ -9,9 +9,9 @@ import {
   Form,
 } from "react-bootstrap";
 import { useEffect, useState } from "react";
+import { parseCookies } from "nookies";
 import GetAllComments from "../hooks/GetAllComments";
 import FormatDate from "../helper/FormatDate";
-import GetUserActive from "../hooks/GetUserActive";
 import InsertComment from "../hooks/InsertComment";
 import DeleteComment from "../hooks/DeleteComment";
 import GetCommentById from "../hooks/GetCommentById";
@@ -25,7 +25,7 @@ export default function DetailMovie() {
   const [comment, setComment] = useState();
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
-  const { id_user, username } = GetUserActive();
+  const { id_user, username } = parseCookies();
   const { getAllComments, allComments, loadingAllComments, errorAllComments } =
     GetAllComments();
   const { insertComment, insertCommentLoading, insertCommentError } =
@@ -65,61 +65,71 @@ export default function DetailMovie() {
   detailMovie?.genres?.map(({ name }) => genreArr.push(name));
 
   const handleOnClick = (e, props = null) => {
-    if (
-      e.target.innerHTML === "Login to add favourite" ||
-      e.target.innerHTML === "Login to add comment"
-    ) {
-      navigate("/sign-in");
-    } else if (e.target.innerHTML === "Add to favourite") {
-      insertFavouriteMovie({
-        variables: {
-          id_user,
-          id_movie: detailMovie.id,
-          image: detailMovie.poster_path,
-          overview: detailMovie.overview,
-          title: detailMovie.title,
-        },
-      });
-      alert("success");
-      navigate(`/favourite-movie/${id_user}`, { replace: true });
-    } else if (e.target.innerHTML === "Add comment") {
-      insertComment({
-        variables: {
-          id_user,
-          id_movie: detailMovie.id,
-          comment: newComment,
-        },
-      });
-      alert("success");
-    } else if (e.target.innerHTML === "Delete") {
-      deleteComment({
-        variables: {
+    switch (e.target.innerHTML) {
+      case "Login to add favourite":
+        navigate("/sign-in");
+        break;
+      case "Login to add comment":
+        navigate("/sign-in");
+        break;
+      case "Add to favourite":
+        insertFavouriteMovie({
+          variables: {
+            id_user,
+            id_movie: detailMovie.id,
+            image: detailMovie.poster_path,
+            overview: detailMovie.overview,
+            title: detailMovie.title,
+          },
+        });
+        navigate(`/favourite-movie/${id_user}`, { replace: true });
+        alert("success");
+        break;
+      case "Add comment":
+        insertComment({
+          variables: {
+            id_user,
+            id_movie: detailMovie.id,
+            comment: newComment,
+          },
+        });
+        alert("success");
+        break;
+      case "Delete":
+        deleteComment({
+          variables: {
+            id: props,
+          },
+        });
+        alert("success");
+        break;
+      case "Update":
+        getCommentById({
+          variables: {
+            id: props,
+          },
+        });
+        setComment({
+          ...comment,
           id: props,
-        },
-      });
-      alert("success");
-    } else if (e.target.innerHTML === "Update") {
-      getCommentById({
-        variables: {
-          id: props,
-        },
-      });
-      setComment({
-        ...comment,
-        id: props,
-      });
-      setShow(true);
-    } else if (e.target.innerHTML === "Close") {
-      setShow(false);
-    } else if (e.target.innerHTML === "Save Update") {
-      updateComment({
-        variables: {
-          id: comment.id,
-          comment: comment.text,
-        },
-      });
-      alert("success");
-      setShow(false);
+        });
+        setShow(true);
+        break;
+      case "Close":
+        setShow(false);
+        break;
+      case "Save Update":
+        updateComment({
+          variables: {
+            id: comment.id,
+            comment: comment.text,
+          },
+        });
+        alert("success");
+        setShow(false);
+        break;
+      default:
+        break;
     }
   };
 
@@ -241,7 +251,7 @@ export default function DetailMovie() {
                         <h5>{e.user.username}</h5>
                         <div className=" d-flex flex-row">
                           <span>{FormatDate(e.created_at)}</span>
-                          {e.user.id === id_user && (
+                          {e.user.id === parseInt(id_user) && (
                             <>
                               <span
                                 className="badge bg-danger mx-2"

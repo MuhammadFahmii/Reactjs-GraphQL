@@ -1,10 +1,14 @@
 export default function Footer() {
   return (
-    <footer class="main-footer">
-      <strong>
-        Copyright &copy;<a href="#">Muhammad Fahmi</a>.
-      </strong>{" "}
-      All rights reserved.
-    </footer>
+    <div className="mt-auto">
+      <footer className="text-center text-lg-start text-white">
+        <div
+          className="text-center p-3"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.2)" }}
+        >
+          © 2021 Copyright Muhammad Fahmi Prasetio
+        </div>
+      </footer>
+    </div>
   );
 }

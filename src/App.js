@@ -9,6 +9,7 @@ import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
 import Home from "./pages/home/Home";
 import ResultSearchMovie from "./pages/ResultSearchMovie";
+import Footer from "./component/Footer";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />
           </Routes>
+          <Footer />
         </Container>
       </Router>
     </>
