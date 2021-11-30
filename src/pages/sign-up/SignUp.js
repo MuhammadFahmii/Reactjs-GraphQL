@@ -9,7 +9,10 @@ export default function SignUp() {
   const [data, setData] = useState();
   const navigate = useNavigate();
   useEffect(() => {
-    if (insertUserData) navigate("/sign-in", { replace: true });
+    if (insertUserData) {
+      alert("Akun anda berhasil dibuat, silahkan login");
+      navigate("/sign-in", { replace: true });
+    }
   }, [insertUserData, navigate]);
 
   const handleOnChange = (e) => {
@@ -17,14 +20,27 @@ export default function SignUp() {
       ...data,
       [e.target.name]: e.target.value,
     });
+    document.querySelector("#username-error").innerHTML = "";
+    document.querySelector("#password-error").innerHTML = "";
   };
-  const handleOnClick = () => {
-    insertUser({
-      variables: {
-        username: data.username,
-        password: data.password,
-      },
-    });
+  const handleOnClick = (e) => {
+    e.preventDefault();
+    if (data === undefined) {
+      alert("Pastikan semua data terisi");
+    } else if (data.password === undefined || data.password === "") {
+      document.querySelector("#password-error").innerHTML =
+        "Password tidak boleh kosong";
+    } else if (data.username === undefined || data.username === "") {
+      document.querySelector("#username-error").innerHTML =
+        "Username tidak boleh kosong";
+    } else {
+      insertUser({
+        variables: {
+          username: data.username,
+          password: data.password,
+        },
+      });
+    }
   };
 
   if (insertUserLoading) {
@@ -50,6 +66,7 @@ export default function SignUp() {
             placeholder="Enter Username"
             onChange={(e) => handleOnChange(e)}
           />
+          <span id="username-error" style={{ color: "red" }}></span>
         </div>
         <div className="form-group">
           <label htmlFor="password">Password</label>
@@ -60,11 +77,12 @@ export default function SignUp() {
             placeholder="Enter Password"
             onChange={(e) => handleOnChange(e)}
           />
+          <span id="password-error" style={{ color: "red" }}></span>
         </div>
         <div className="col-md-12 text-center mb-3 mt-3">
           <button
             className=" btn btn-block btn-primary"
-            onClick={handleOnClick}
+            onClick={(e) => handleOnClick(e)}
           >
             Get Started For Free
           </button>

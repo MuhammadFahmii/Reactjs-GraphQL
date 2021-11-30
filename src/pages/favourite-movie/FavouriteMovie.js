@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router";
 import { Card, Col, Image, Row } from "react-bootstrap";
 import GetFavouriteMovie from "../../hooks/GetFavouriteMovie";
+import { useEffect } from "react";
 
 export default function FavouriteMovie() {
   const { id_user } = useParams();
@@ -11,11 +12,13 @@ export default function FavouriteMovie() {
     getFavouriteMovieError,
     getFavouriteMovieRefetch,
   } = GetFavouriteMovie(id_user);
+  useEffect(() => {
+    getFavouriteMovieRefetch();
+  }, [getFavouriteMovieRefetch]);
 
   const handleOnClick = (id) => navigate(`/detail-movie/${id}`);
 
   if (getFavouriteMovieLoading) {
-    getFavouriteMovieRefetch();
     return <h1>Harap tunggu</h1>;
   } else if (getFavouriteMovieError) {
     return <h1>Terjadi kesalahan</h1>;

@@ -15,7 +15,7 @@ export default function SignIn() {
     if (getUsernameData?.length > 0) {
       setCookie(null, "id_user", getUsernameData[0].id);
       setCookie(null, "username", getUsernameData[0].username);
-      alert("welcome");
+      alert(`welcome ${getUsernameData[0].username}`);
       navigate("/", { replace: true });
     }
   }, [getUsernameData, navigate, dispatch]);
@@ -25,16 +25,20 @@ export default function SignIn() {
       ...data,
       [e.target.name]: e.target.value,
     });
+    document.querySelector("#username-error").innerHTML = "";
+    document.querySelector("#password-error").innerHTML = "";
   };
 
   const handleOnClick = (e) => {
     e.preventDefault();
-    if (
-      data === undefined ||
-      data.username === undefined ||
-      data.password === undefined
-    ) {
+    if (data === undefined) {
       alert("Pastikan semua data terisi");
+    } else if (data.password === undefined || data.password === "") {
+      document.querySelector("#password-error").innerHTML =
+        "Password tidak boleh kosong";
+    } else if (data.username === undefined || data.username === "") {
+      document.querySelector("#username-error").innerHTML =
+        "Username tidak boleh kosong";
     } else {
       getUsername({
         variables: {
@@ -71,6 +75,7 @@ export default function SignIn() {
                 placeholder="Enter Username"
                 onChange={handleOnChange}
               />
+              <span id="username-error" style={{ color: "red" }}></span>
             </div>
             <div className="form-group">
               <label htmlFor="password">Password</label>
@@ -83,6 +88,7 @@ export default function SignIn() {
                 placeholder="Enter Password"
                 onChange={handleOnChange}
               />
+              <span id="password-error" style={{ color: "red" }}></span>
             </div>
             <div className="col-md-12 text-center mt-3 mb-3">
               <button

@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import { parseCookies } from "nookies";
 import InsertFavouriteMovie from "../../hooks/InsertFavouriteMovie";
 import Comment from "./Comment";
+import TrailerButton from "./TrailerButton";
 
 export default function DetailMovie() {
   const { id_movie } = useParams();
-  const [detailMovie, setDetailMovie] = useState();
   const navigate = useNavigate();
-
+  const [detailMovie, setDetailMovie] = useState();
+  const [similarMovie, setSimilarMovie] = useState();
+  const [urlMovieVideo, setUrlMovieVideo] = useState();
   const { id_user } = parseCookies();
   const {
     insertFavouriteMovie,
@@ -19,18 +21,32 @@ export default function DetailMovie() {
 
   useEffect(() => {
     const urlDetail = `${process.env.REACT_APP_URL_API}/${id_movie}?api_key=${process.env.REACT_APP_API_KEY}`;
+    const urlSimiliarMovie = `${process.env.REACT_APP_URL_API}/${id_movie}/similar?api_key=${process.env.REACT_APP_API_KEY}`;
+    const urlGetMovieVideo = `${process.env.REACT_APP_URL_API}/${id_movie}/videos?api_key=${process.env.REACT_APP_API_KEY}`;
     const getDetail = async () => {
       const response = await fetch(urlDetail);
       const result = await response.json();
       setDetailMovie(result);
     };
+    const getSimiliarMovie = async () => {
+      const response = await fetch(urlSimiliarMovie);
+      const { results } = await response.json();
+      setSimilarMovie(results);
+    };
+    const getMovieVideo = async () => {
+      const response = await fetch(urlGetMovieVideo);
+      const { results } = await response.json();
+      results.map((e) => (e.type === "Trailer" ? setUrlMovieVideo(e.key) : ""));
+    };
     getDetail();
+    getSimiliarMovie();
+    getMovieVideo();
   }, [id_movie]);
 
   let genreArr = [];
   detailMovie?.genres?.map(({ name }) => genreArr.push(name));
 
-  const handleOnClick = (e) => {
+  const handleOnClick = (e, props = null) => {
     switch (e.target.innerHTML) {
       case "Login to add favourite":
         navigate("/sign-in");
@@ -50,6 +66,14 @@ export default function DetailMovie() {
         break;
       default:
         break;
+    }
+
+    if (e.target.tagName === "IMG") {
+      window.scroll({
+        top: 0,
+        behavior: "smooth",
+      });
+      return navigate(`/detail-movie/${props}`);
     }
   };
 
@@ -87,6 +111,7 @@ export default function DetailMovie() {
                   >
                     {id_user ? "Add to favourite" : "Login to add favourite"}
                   </button>
+                  <TrailerButton path={urlMovieVideo} />
                 </Col>
               </Row>
               <h3 className="text-white ">Overview:</h3>
@@ -96,14 +121,22 @@ export default function DetailMovie() {
               <Comment id_movie={id_movie} detailMovie={detailMovie} />
             </Col>
             <Col xs={2}>
-              <Image
-                src={`https://image.tmdb.org/t/p/w200/${detailMovie.poster_path}`}
-                fluid
-              />
-              <Image
-                src={`https://image.tmdb.org/t/p/w200/${detailMovie.poster_path}`}
-                fluid
-              />
+              <h4 className="text-white">Similar Movie</h4>
+              {similarMovie?.map((e, i) => {
+                if (i < 5) {
+                  return (
+                    <Image
+                      key={i}
+                      src={`https://image.tmdb.org/t/p/w200/${e.poster_path}`}
+                      className="my-3"
+                      fluid
+                      onClick={(i) => handleOnClick(i, e.id)}
+                      style={{ cursor: "pointer" }}
+                    />
+                  );
+                }
+                return true;
+              })}
             </Col>
           </Row>
         </>
