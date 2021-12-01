@@ -38,6 +38,7 @@ export default function ResultSearchMovie() {
                   <Card.Img
                     variant="down"
                     src={`https://image.tmdb.org/t/p/w200/${e.poster_path}`}
+                    style={{ filter: "brightness(70%)" }}
                   />
                   <Card.ImgOverlay>
                     <Badge bg="warning" text="dark">

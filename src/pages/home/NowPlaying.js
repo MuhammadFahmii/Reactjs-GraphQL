@@ -5,7 +5,6 @@ import { Genre } from "../../constant/Genre";
 
 export default function NowPlaying() {
   const [nowPlaying, setNowPlaying] = useState();
-  const [hover, setHover] = useState(false);
   const navigate = useNavigate("");
 
   useEffect(() => {
@@ -34,14 +33,6 @@ export default function NowPlaying() {
     getnowPlaying();
   }, []);
 
-  let hoverImg;
-  if (hover) {
-    hoverImg = { filter: "brightness(70%)" };
-  } else {
-    hoverImg = { filter: "brightness(50%)" };
-  }
-
-  const toogleHover = () => setHover(!hover);
   const handleOnClick = (id) => navigate(`/detail-movie/${id}`);
 
   return (
@@ -67,12 +58,14 @@ export default function NowPlaying() {
             <Card
               key={i}
               className="mx-4 my-3"
-              onMouseEnter={toogleHover}
-              onMouseLeave={toogleHover}
               onClick={() => handleOnClick(e.id)}
               style={{ border: "none", cursor: "pointer" }}
             >
-              <Card.Img variant="down" src={e.img} style={hoverImg} />
+              <Card.Img
+                variant="down"
+                src={e.img}
+                style={{ filter: "brightness(70%)" }}
+              />
               <Card.ImgOverlay>
                 <Badge bg="warning" text="dark">
                   {e.genre}

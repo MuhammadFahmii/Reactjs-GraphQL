@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router";
-import { Container, Row, Col, Image, Badge } from "react-bootstrap";
+import { Container, Row, Col, Image, Badge, Card } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { parseCookies } from "nookies";
 import InsertFavouriteMovie from "../../hooks/InsertFavouriteMovie";
@@ -68,7 +68,7 @@ export default function DetailMovie() {
         break;
     }
 
-    if (e.target.tagName === "IMG") {
+    if (e.target.tagName === "DIV") {
       window.scroll({
         top: 0,
         behavior: "smooth",
@@ -130,14 +130,34 @@ export default function DetailMovie() {
               {similarMovie?.map((e, i) => {
                 if (i < 5) {
                   return (
-                    <Image
+                    <Card
                       key={i}
-                      src={`https://image.tmdb.org/t/p/w200/${e.poster_path}`}
-                      className="my-3"
-                      fluid
+                      className="mx-4 my-3"
                       onClick={(i) => handleOnClick(i, e.id)}
-                      style={{ cursor: "pointer", marginRight: "10px" }}
-                    />
+                      style={{ border: "none", cursor: "pointer" }}
+                    >
+                      <Card.Img
+                        variant="down"
+                        src={`https://image.tmdb.org/t/p/w200/${e.poster_path}`}
+                        style={{ filter: "brightness(70%)" }}
+                      />
+                      <Card.ImgOverlay>
+                        <Badge bg="warning" text="dark">
+                          {e.genre}
+                        </Badge>
+                        <Card.Title
+                          style={{
+                            position: "absolute",
+                            bottom: "0",
+                            color: "white",
+                            textShadow: "2px 1px grey",
+                            fontSize: "15px",
+                          }}
+                        >
+                          {e.title}
+                        </Card.Title>
+                      </Card.ImgOverlay>
+                    </Card>
                   );
                 }
                 return true;
