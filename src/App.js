@@ -13,28 +13,23 @@ import DetailMovie from "./pages/detail-movie/DetailMovie";
 
 function App() {
   return (
-    <>
-      <Router>
-        <Container>
-          <Header />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/detail-movie/:id_movie" element={<DetailMovie />} />
-            <Route
-              path="/favourite-movie/:id_user"
-              element={<FavouriteMovie />}
-            />
-            <Route
-              path="/result-search-movie"
-              element={<ResultSearchMovie />}
-            />
-            <Route path="/sign-in" element={<SignIn />} />
-            <Route path="/sign-up" element={<SignUp />} />
-          </Routes>
-          <Footer />
-        </Container>
-      </Router>
-    </>
+    <Router>
+      <Container>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/detail-movie/:id_movie" element={<DetailMovie />} />
+          <Route
+            path="/favourite-movie/:id_user"
+            element={<FavouriteMovie />}
+          />
+          <Route path="/result-search-movie" element={<ResultSearchMovie />} />
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/sign-up" element={<SignUp />} />
+        </Routes>
+        <Footer />
+      </Container>
+    </Router>
   );
 }
 

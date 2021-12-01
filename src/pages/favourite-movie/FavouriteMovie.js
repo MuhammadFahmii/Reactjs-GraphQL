@@ -1,11 +1,15 @@
 import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
 import { Card, Col, Image, Row } from "react-bootstrap";
+import { parseCookies } from "nookies";
 import GetFavouriteMovie from "../../hooks/GetFavouriteMovie";
 import DeleteFavouriteMovie from "../../hooks/DeleteFavouriteMovie";
+import { myFavouriteMovie } from "../../stores/MovieSlices";
 
 export default function FavouriteMovie() {
-  const { id_user } = useParams();
+  const { id_user } = parseCookies();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const {
     getFavouriteMovieData,
@@ -22,6 +26,10 @@ export default function FavouriteMovie() {
 
   useEffect(() => {
     getFavouriteMovieRefetch();
+    window.scroll({
+      top: window.innerWidth,
+      behavior: "smooth",
+    });
   }, [getFavouriteMovieRefetch, deleteFavouriteMovieData]);
 
   const handleOnClick = (e, id) => {
@@ -33,6 +41,9 @@ export default function FavouriteMovie() {
           },
         });
     } else {
+      const idFavouriteMovieData = [];
+      getFavouriteMovieData?.map((e) => idFavouriteMovieData.push(e.id_movie));
+      dispatch(myFavouriteMovie(idFavouriteMovieData));
       navigate(`/detail-movie/${id}`);
     }
   };

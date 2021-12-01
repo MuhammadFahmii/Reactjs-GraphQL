@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router";
 import { Container, Row, Col, Image, Badge, Card } from "react-bootstrap";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { parseCookies } from "nookies";
 import InsertFavouriteMovie from "../../hooks/InsertFavouriteMovie";
 import Comment from "./Comment";
@@ -9,10 +10,14 @@ import TrailerButton from "./TrailerButton";
 export default function DetailMovie() {
   const { id_movie } = useParams();
   const { id_user } = parseCookies();
+  const dataFavourite = useSelector((state) => {
+    return state.movies.favouriteMovie;
+  });
   const navigate = useNavigate();
   const [detailMovie, setDetailMovie] = useState();
   const [similarMovie, setSimilarMovie] = useState();
   const [urlMovieVideo, setUrlMovieVideo] = useState();
+  const [idAlreadyFavourite, setIdAlreadyFavourite] = useState();
   const {
     insertFavouriteMovie,
     insertFavouriteMovieLoading,
@@ -20,6 +25,9 @@ export default function DetailMovie() {
   } = InsertFavouriteMovie(id_movie);
 
   useEffect(() => {
+    dataFavourite.includes(parseInt(id_movie))
+      ? setIdAlreadyFavourite(true)
+      : setIdAlreadyFavourite(false);
     const urlDetail = `${process.env.REACT_APP_URL_API}/movie/${id_movie}?api_key=${process.env.REACT_APP_API_KEY}`;
     const urlSimiliarMovie = `${process.env.REACT_APP_URL_API}/movie/${id_movie}/similar?api_key=${process.env.REACT_APP_API_KEY}`;
     const urlGetMovieVideo = `${process.env.REACT_APP_URL_API}/movie/${id_movie}/videos?api_key=${process.env.REACT_APP_API_KEY}`;
@@ -41,7 +49,7 @@ export default function DetailMovie() {
     getDetail();
     getSimiliarMovie();
     getMovieVideo();
-  }, [id_movie]);
+  }, [id_movie, dataFavourite, idAlreadyFavourite]);
 
   let genreArr = [];
   detailMovie?.genres?.map(({ name }) => genreArr.push(name));
@@ -114,10 +122,18 @@ export default function DetailMovie() {
                     <h5>{detailMovie.overview}</h5>
                   </div>
                   <Badge
-                    style={{ cursor: "pointer", marginRight: "10px" }}
+                    style={
+                      idAlreadyFavourite
+                        ? { marginRight: "10px" }
+                        : { cursor: "pointer", marginRight: "10px" }
+                    }
                     onClick={(e) => handleOnClick(e)}
                   >
-                    {id_user ? "Add to favourite" : "Login to add favourite"}
+                    {id_user
+                      ? idAlreadyFavourite
+                        ? "Favourite"
+                        : "Add to favourite"
+                      : "Login to add favourite"}
                   </Badge>
                   <TrailerButton path={urlMovieVideo} />
                 </Col>
