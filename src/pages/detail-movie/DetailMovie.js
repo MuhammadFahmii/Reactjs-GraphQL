@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router";
-import { Container, Row, Col, Image } from "react-bootstrap";
+import { Container, Row, Col, Image, Badge } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { parseCookies } from "nookies";
 import InsertFavouriteMovie from "../../hooks/InsertFavouriteMovie";
@@ -19,10 +19,10 @@ export default function DetailMovie() {
     insertFavouriteMovieError,
   } = InsertFavouriteMovie(id_movie);
 
-  const urlDetail = `${process.env.REACT_APP_URL_API}/movie/${id_movie}?api_key=${process.env.REACT_APP_API_KEY}`;
-  const urlSimiliarMovie = `${process.env.REACT_APP_URL_API}/movie/${id_movie}/similar?api_key=${process.env.REACT_APP_API_KEY}`;
-  const urlGetMovieVideo = `${process.env.REACT_APP_URL_API}/movie/${id_movie}/videos?api_key=${process.env.REACT_APP_API_KEY}`;
   useEffect(() => {
+    const urlDetail = `${process.env.REACT_APP_URL_API}/movie/${id_movie}?api_key=${process.env.REACT_APP_API_KEY}`;
+    const urlSimiliarMovie = `${process.env.REACT_APP_URL_API}/movie/${id_movie}/similar?api_key=${process.env.REACT_APP_API_KEY}`;
+    const urlGetMovieVideo = `${process.env.REACT_APP_URL_API}/movie/${id_movie}/videos?api_key=${process.env.REACT_APP_API_KEY}`;
     const getDetail = async () => {
       const response = await fetch(urlDetail);
       const result = await response.json();
@@ -97,29 +97,35 @@ export default function DetailMovie() {
                   />
                 </Col>
                 <Col>
-                  <h4>
-                    Countries:{" "}
-                    {detailMovie.production_companies[0]?.origin_country}
-                  </h4>
-                  <h4>Year: {detailMovie.release_date?.split("-")[0]}</h4>
-                  <h4>Category: {genreArr.join(", ")}</h4>
-                  <h4>Release: {detailMovie.release_date}</h4>
-                  <h4>Rating: {detailMovie.vote_average}</h4>
-                  <button
-                    className="btn btn-primary"
+                  <div
+                    style={{
+                      textAlign: "justify",
+                    }}
+                  >
+                    <h5>
+                      Countries:{" "}
+                      {detailMovie.production_companies[0]?.origin_country}
+                    </h5>
+                    <h5>Year: {detailMovie.release_date?.split("-")[0]}</h5>
+                    <h5>Category: {genreArr.join(", ")}</h5>
+                    <h5>Release: {detailMovie.release_date}</h5>
+                    <h5>Rating: {detailMovie.vote_average}</h5>
+                    <h5>Overview: </h5>
+                    <h5>{detailMovie.overview}</h5>
+                  </div>
+                  <Badge
+                    style={{ cursor: "pointer", marginRight: "10px" }}
                     onClick={(e) => handleOnClick(e)}
                   >
                     {id_user ? "Add to favourite" : "Login to add favourite"}
-                  </button>
+                  </Badge>
                   <TrailerButton path={urlMovieVideo} />
                 </Col>
               </Row>
-              <h4 style={{ textAlign: "justify", color: "white" }}>
-                {detailMovie.overview}
-              </h4>
+
               <Comment id_movie={id_movie} detailMovie={detailMovie} />
             </Col>
-            <Col xs={2}>
+            <Col lg={2}>
               <h4 className="text-white">Similar Movie</h4>
               {similarMovie?.map((e, i) => {
                 if (i < 5) {
@@ -130,7 +136,7 @@ export default function DetailMovie() {
                       className="my-3"
                       fluid
                       onClick={(i) => handleOnClick(i, e.id)}
-                      style={{ cursor: "pointer" }}
+                      style={{ cursor: "pointer", marginRight: "10px" }}
                     />
                   );
                 }

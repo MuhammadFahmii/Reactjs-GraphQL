@@ -3,21 +3,21 @@ import { Card, Col, Badge } from "react-bootstrap";
 import { useNavigate } from "react-router";
 import { Genre } from "../../constant/Genre";
 
-export default function PopularMovie() {
-  const [trendingWeek, setTrendingWeek] = useState();
+export default function NowPlaying() {
+  const [nowPlaying, setNowPlaying] = useState();
   const [hover, setHover] = useState(false);
   const navigate = useNavigate("");
 
   useEffect(() => {
     const genre = Genre;
     const url = `
-    https://api.themoviedb.org/3/trending/movie/week?api_key=${process.env.REACT_APP_API_KEY}`;
-    const getTrendingWeek = async () => {
+    https://api.themoviedb.org/3/movie/now_playing?api_key=${process.env.REACT_APP_API_KEY}`;
+    const getnowPlaying = async () => {
       const response = await fetch(url);
       const { results } = await response.json();
       const best = [];
       results?.forEach((e) => {
-        if (best.length === 10) return setTrendingWeek(best);
+        if (best.length === 10) return setNowPlaying(best);
         genre.forEach(({ id, name }) => {
           if (id === e.genre_ids[0]) {
             const newData = {
@@ -31,7 +31,7 @@ export default function PopularMovie() {
         });
       });
     };
-    getTrendingWeek();
+    getnowPlaying();
   }, []);
 
   let hoverImg;
@@ -50,9 +50,10 @@ export default function PopularMovie() {
         style={{
           textAlign: "center",
           color: "white",
+          marginTop: "5%",
         }}
       >
-        Popular Movies This Week
+        Now Playing On Theater
       </h1>
       <Col
         style={{
@@ -61,7 +62,7 @@ export default function PopularMovie() {
           justifyContent: "space-around",
         }}
       >
-        {trendingWeek?.map((e, i) => {
+        {nowPlaying?.map((e, i) => {
           return (
             <Card
               key={i}

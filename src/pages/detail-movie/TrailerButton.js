@@ -4,7 +4,7 @@ export default function TrailerButton({ path }) {
       target="_blank"
       rel="noreferrer"
       href={`https://www.youtube.com/watch?v=${path}`}
-      className="btn btn-warning mx-3"
+      className="badge bg-danger"
     >
       Watch Trailers
     </a>

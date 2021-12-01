@@ -22,6 +22,7 @@ export default function SignUp() {
     });
     document.querySelector("#username-error").innerHTML = "";
     document.querySelector("#password-error").innerHTML = "";
+    document.querySelector("#confirm-password-error").innerHTML = "";
   };
   const handleOnClick = (e) => {
     e.preventDefault();
@@ -30,6 +31,15 @@ export default function SignUp() {
     } else if (data.password === undefined || data.password === "") {
       document.querySelector("#password-error").innerHTML =
         "Password tidak boleh kosong";
+    } else if (
+      data.confirmpassword === undefined ||
+      data.confirmpassword === ""
+    ) {
+      document.querySelector("#confirm-password-error").innerHTML =
+        "Confirm Password tidak boleh kosong";
+    } else if (data.confirmpassword !== data.password) {
+      document.querySelector("#confirm-password-error").innerHTML =
+        "Password tidak sama";
     } else if (data.username === undefined || data.username === "") {
       document.querySelector("#username-error").innerHTML =
         "Username tidak boleh kosong";
@@ -52,12 +62,12 @@ export default function SignUp() {
   return (
     <div id="div-auth" className="row">
       <div className="logo mb-3">
-        <div className="col-md-12 text-center">
+        <div className="col-12 text-center">
           <h1 id="signup-title">Signup</h1>
         </div>
       </div>
       <form action="#" name="registration">
-        <div className="form-group">
+        <div className="form-group mb-3">
           <label htmlFor="exampleInputEmail1">Username</label>
           <input
             type="text"
@@ -68,7 +78,7 @@ export default function SignUp() {
           />
           <span id="username-error" style={{ color: "red" }}></span>
         </div>
-        <div className="form-group">
+        <div className="form-group mb-3">
           <label htmlFor="password">Password</label>
           <input
             type="password"
@@ -79,7 +89,18 @@ export default function SignUp() {
           />
           <span id="password-error" style={{ color: "red" }}></span>
         </div>
-        <div className="col-md-12 text-center mb-3 mt-3">
+        <div className="form-group">
+          <label htmlFor="password">Confirm Password</label>
+          <input
+            type="password"
+            name="confirmpassword"
+            className="form-control"
+            placeholder="Enter Password"
+            onChange={(e) => handleOnChange(e)}
+          />
+          <span id="confirm-password-error" style={{ color: "red" }}></span>
+        </div>
+        <div className="col-12 text-center mb-3 mt-3">
           <button
             className=" btn btn-block btn-primary"
             onClick={(e) => handleOnClick(e)}
@@ -87,7 +108,7 @@ export default function SignUp() {
             Get Started For Free
           </button>
         </div>
-        <div className="col-md-12">
+        <div className="col-12">
           <div className="form-group">
             <p className="text-center">
               <Link to={"/sign-in"}>Already have an account?</Link>

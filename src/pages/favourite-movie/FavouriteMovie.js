@@ -1,7 +1,8 @@
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Card, Col, Image, Row } from "react-bootstrap";
 import GetFavouriteMovie from "../../hooks/GetFavouriteMovie";
-import { useEffect } from "react";
+import DeleteFavouriteMovie from "../../hooks/DeleteFavouriteMovie";
 
 export default function FavouriteMovie() {
   const { id_user } = useParams();
@@ -12,15 +13,33 @@ export default function FavouriteMovie() {
     getFavouriteMovieError,
     getFavouriteMovieRefetch,
   } = GetFavouriteMovie(id_user);
+  const {
+    deleteFavouriteMovie,
+    deleteFavouriteMovieData,
+    deleteFavouriteMovieLoading,
+    deleteFavouriteMovieError,
+  } = DeleteFavouriteMovie();
+
   useEffect(() => {
     getFavouriteMovieRefetch();
-  }, [getFavouriteMovieRefetch]);
+  }, [getFavouriteMovieRefetch, deleteFavouriteMovieData]);
 
-  const handleOnClick = (id) => navigate(`/detail-movie/${id}`);
+  const handleOnClick = (e, id) => {
+    if (e.target.innerHTML === "Delete") {
+      window.confirm("Apakah anda yakin?") &&
+        deleteFavouriteMovie({
+          variables: {
+            id,
+          },
+        });
+    } else {
+      navigate(`/detail-movie/${id}`);
+    }
+  };
 
-  if (getFavouriteMovieLoading) {
+  if (getFavouriteMovieLoading || deleteFavouriteMovieLoading) {
     return <h1>Harap tunggu</h1>;
-  } else if (getFavouriteMovieError) {
+  } else if (getFavouriteMovieError || deleteFavouriteMovieError) {
     return <h1>Terjadi kesalahan</h1>;
   }
   return (
@@ -29,28 +48,37 @@ export default function FavouriteMovie() {
       {getFavouriteMovieData.length !== 0 ? (
         getFavouriteMovieData?.map((e, i) => {
           return (
-            <Row
-              key={i}
-              style={{ cursor: "pointer" }}
-              className="mx-4 my-2"
-              onClick={() => handleOnClick(e.id_movie)}
-            >
+            <Row key={i} className="my-2">
               <Col>
                 {" "}
-                <Image src={`https://image.tmdb.org/t/p/w200${e.image}`} />
+                <Image
+                  onClick={(i) => handleOnClick(i, e.id_movie)}
+                  src={`https://image.tmdb.org/t/p/w200${e.image}`}
+                  style={{ marginBottom: "20px", cursor: "pointer" }}
+                />
               </Col>
               <Col md="9">
                 {" "}
                 <Card.Body style={{ color: "white" }}>
-                  <Card.Title>{e.title}</Card.Title>
-                  <Card.Subtitle className="mb-2 text-muted">
-                    Card Subtitle
+                  <Card.Title
+                    style={{ cursor: "pointer" }}
+                    onClick={(i) => handleOnClick(i, e.id_movie)}
+                  >
+                    {e.title}
+                  </Card.Title>
+                  <Card.Subtitle
+                    className="mb-2 badge bg-danger"
+                    style={{ cursor: "pointer" }}
+                    onClick={(i) => handleOnClick(i, e.id)}
+                  >
+                    Delete
                   </Card.Subtitle>
                   <Card.Text style={{ textAlign: "justify" }}>
                     {e.overview}
                   </Card.Text>
                 </Card.Body>
               </Col>
+              <hr />
             </Row>
           );
         })

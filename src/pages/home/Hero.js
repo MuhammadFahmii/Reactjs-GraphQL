@@ -4,7 +4,6 @@ import { useNavigate } from "react-router";
 
 export default function Hero() {
   const [topTrending, setTopTrending] = useState();
-  const posterPath = `https://image.tmdb.org/t/p/original${topTrending?.poster_path}`;
   const navigate = useNavigate();
   useEffect(() => {
     const url = `https://api.themoviedb.org/3/trending/all/week?api_key=${process.env.REACT_APP_API_KEY}`;
@@ -23,7 +22,7 @@ export default function Hero() {
   return (
     <>
       <Image
-        src={posterPath}
+        src={`https://image.tmdb.org/t/p/original${topTrending?.poster_path}`}
         style={{ borderRadius: "20px", cursor: "pointer" }}
         fluid
         onClick={handleOnClick}

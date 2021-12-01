@@ -13,7 +13,6 @@ export default function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const urlSearch = `${process.env.REACT_APP_URL_API}/search/movie?api_key=${process.env.REACT_APP_API_KEY}&query=${search}&include_adult=false`;
-  const urlSearchMovieByGenre = `${process.env.REACT_APP_URL_API}/discover/movie?api_key=${process.env.REACT_APP_API_KEY}&with_genres=28`;
 
   const handleOnChange = (search) => setSearch(search);
   const handleOnSearch = async (e) => {
@@ -39,7 +38,7 @@ export default function Header() {
       setSearch("");
     }
   };
-  const handleOnClick = async (e) => {
+  const handleClickLogout = async (e) => {
     switch (e.target.innerHTML) {
       case "Logout":
         destroyCookie(null, "id_user");
@@ -50,16 +49,14 @@ export default function Header() {
       default:
         break;
     }
-    switch (e.target.tagName) {
-      case "A":
-        const response = await fetch(urlSearchMovieByGenre);
-        const { results } = await response.json();
-        dispatch(resultSearchMovie(results));
-        navigate("/result-search-movie");
-        break;
-      default:
-        break;
-    }
+  };
+
+  const handleClickSearchGenre = async (id) => {
+    const urlSearchMovieByGenre = `${process.env.REACT_APP_URL_API}/discover/movie?api_key=${process.env.REACT_APP_API_KEY}&with_genres=${id}`;
+    const response = await fetch(urlSearchMovieByGenre);
+    const { results } = await response.json();
+    dispatch(resultSearchMovie(results));
+    navigate("/result-search-movie");
   };
 
   return (
@@ -79,11 +76,15 @@ export default function Header() {
             {genre?.map((e, i) => {
               if (i < 5) {
                 return (
-                  <NavDropdown.Item key={i} onClick={(e) => handleOnClick(e)}>
+                  <NavDropdown.Item
+                    key={i}
+                    onClick={() => handleClickSearchGenre(e.id)}
+                  >
                     {e.name}
                   </NavDropdown.Item>
                 );
               }
+              return true;
             })}
           </NavDropdown>
           <input
@@ -101,14 +102,14 @@ export default function Header() {
             onKeyDown={(e) => handleOnSearch(e)}
           />
           {username !== undefined ? (
-            <NavDropdown title={username} className="mx-3">
+            <NavDropdown title={username}>
               <NavDropdown.Item as={Link} to={`/favourite-movie/${id_user}`}>
                 My Favourite
               </NavDropdown.Item>
               <NavDropdown.Item as={Link} to={"/setting"}>
                 Setting
               </NavDropdown.Item>
-              <NavDropdown.Item onClick={(e) => handleOnClick(e)}>
+              <NavDropdown.Item onClick={(e) => handleClickLogout(e)}>
                 Logout
               </NavDropdown.Item>
             </NavDropdown>

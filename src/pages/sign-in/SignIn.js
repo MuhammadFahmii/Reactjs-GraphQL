@@ -65,7 +65,7 @@ export default function SignIn() {
             </div>
           </div>
           <form>
-            <div className="form-group">
+            <div className="form-group mb-3">
               <label htmlFor="username">Username</label>
               <input
                 type="username"

@@ -7,7 +7,6 @@ export default function ResultSearchMovie() {
   const dataResult = useSelector((state) => {
     return state.movies.movies;
   });
-  console.log(dataResult);
   const handleOnClick = (id) => navigate(`/detail-movie/${id}`);
 
   return (

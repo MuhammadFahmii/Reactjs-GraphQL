@@ -137,7 +137,6 @@ export default function Comment({ id_movie, detailMovie }) {
           )}
           <Badge
             style={{ cursor: "pointer" }}
-            pill
             className="mt-3"
             onClick={(e) => handleOnClick(e, id_user)}
           >
@@ -147,40 +146,43 @@ export default function Comment({ id_movie, detailMovie }) {
 
         <div className="my-3" style={{ color: "white" }}>
           <h4>Recent Comments</h4>
-          <h6>Latest Comments section by users</h6>
           <hr />
-          {allComments?.map((e) => {
-            return (
-              <div key={e.id}>
-                <div>
-                  <h5>{e.user.username}</h5>
-                  <div className=" d-flex flex-row">
-                    <span>{FormatDate(e.created_at)}</span>
-                    {e.user.id === parseInt(id_user) && (
-                      <>
-                        <span
-                          className="badge bg-danger mx-2"
-                          style={{ cursor: "pointer" }}
-                          onClick={(i) => handleOnClick(i, e.id)}
-                        >
-                          Delete
-                        </span>
-                        <span
-                          className="badge bg-warning"
-                          style={{ cursor: "pointer" }}
-                          onClick={(i) => handleOnClick(i, e.id)}
-                        >
-                          Update
-                        </span>
-                      </>
-                    )}
+          {allComments.length !== 0 ? (
+            allComments.map((e) => {
+              return (
+                <div key={e.id}>
+                  <div>
+                    <h5>{e.user.username}</h5>
+                    <div className=" d-flex flex-row">
+                      <span>{FormatDate(e.created_at)}</span>
+                      {e.user.id === parseInt(id_user) && (
+                        <>
+                          <span
+                            className="badge bg-danger mx-2"
+                            style={{ cursor: "pointer" }}
+                            onClick={(i) => handleOnClick(i, e.id)}
+                          >
+                            Delete
+                          </span>
+                          <span
+                            className="badge bg-warning"
+                            style={{ cursor: "pointer" }}
+                            onClick={(i) => handleOnClick(i, e.id)}
+                          >
+                            Update
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    <p>"{e.comment}"</p>
                   </div>
-                  <p>"{e.comment}"</p>
+                  <hr />
                 </div>
-                <hr />
-              </div>
-            );
-          })}
+              );
+            })
+          ) : (
+            <h5>Comment not found</h5>
+          )}
         </div>
       </div>
       <Modal show={show} onHide={() => setShow(false)}>

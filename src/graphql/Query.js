@@ -25,6 +25,7 @@ export const QueryGetCommentById = gql`
 export const QueryGetFavouriteMovie = gql`
   query QueryGetFavouriteMovie($id: Int!) {
     movie_app_favourite_movies(where: { id_user: { _eq: $id } }) {
+      id
       image
       overview
       title
