@@ -7,6 +7,7 @@ export default function ResultSearchMovie() {
   const dataResult = useSelector((state) => {
     return state.movies.movies;
   });
+  console.log(dataResult);
   const handleOnClick = (id) => navigate(`/detail-movie/${id}`);
 
   return (
@@ -26,33 +27,38 @@ export default function ResultSearchMovie() {
           justifyContent: "space-evenly",
         }}
       >
-        {dataResult?.map((e, i) => {
-          return (
-            <Card
-              key={i}
-              className="mx-3 my-3"
-              style={{ border: "none", cursor: "pointer" }}
-              onClick={() => handleOnClick(e.id)}
-            >
-              <Card.Img variant="down" src={e.img} />
-              <Card.ImgOverlay>
-                <Badge bg="warning" text="dark">
-                  {e.genre}
-                </Badge>
-                <Card.Title
-                  style={{
-                    position: "absolute",
-                    bottom: "0",
-                    color: "white",
-                    textShadow: "2px 1px grey",
-                  }}
+        {dataResult
+          ? dataResult.map((e, i) => {
+              return (
+                <Card
+                  key={i}
+                  className="mx-3 my-3"
+                  style={{ border: "none", cursor: "pointer" }}
+                  onClick={() => handleOnClick(e.id)}
                 >
-                  {e.title}
-                </Card.Title>
-              </Card.ImgOverlay>
-            </Card>
-          );
-        })}
+                  <Card.Img
+                    variant="down"
+                    src={`https://image.tmdb.org/t/p/w200/${e.poster_path}`}
+                  />
+                  <Card.ImgOverlay>
+                    <Badge bg="warning" text="dark">
+                      {e.genre}
+                    </Badge>
+                    <Card.Title
+                      style={{
+                        position: "absolute",
+                        bottom: "0",
+                        color: "white",
+                        textShadow: "2px 1px grey",
+                      }}
+                    >
+                      {e.title}
+                    </Card.Title>
+                  </Card.ImgOverlay>
+                </Card>
+              );
+            })
+          : ""}
       </Col>
     </>
   );

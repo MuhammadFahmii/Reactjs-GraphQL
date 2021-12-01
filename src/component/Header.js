@@ -7,16 +7,17 @@ import { resultSearchMovie } from "../stores/MovieSlices";
 import { Genre } from "../constant/Genre";
 import { destroyCookie, parseCookies } from "nookies";
 export default function Header() {
+  const genre = Genre;
   const { id_user, username } = parseCookies();
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const urlSearch = `${process.env.REACT_APP_URL_API}/search/movie?api_key=${process.env.REACT_APP_API_KEY}&query=${search}&include_adult=false`;
+  const urlSearchMovieByGenre = `${process.env.REACT_APP_URL_API}/discover/movie?api_key=${process.env.REACT_APP_API_KEY}&with_genres=28`;
 
   const handleOnChange = (search) => setSearch(search);
   const handleOnSearch = async (e) => {
     if (e.key === "Enter") {
-      const genre = Genre;
-      const urlSearch = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&query=${search}&include_adult=false`;
       const response = await fetch(urlSearch);
       const { results } = await response.json();
       let best = [];
@@ -27,7 +28,7 @@ export default function Header() {
               id: e.id,
               genre: name,
               title: e.title,
-              img: `https://image.tmdb.org/t/p/w200/${e.poster_path}`,
+              poster_path: e.poster_path,
             };
             best.push(newData);
           }
@@ -38,13 +39,23 @@ export default function Header() {
       setSearch("");
     }
   };
-  const handleOnClick = (e) => {
+  const handleOnClick = async (e) => {
     switch (e.target.innerHTML) {
       case "Logout":
         destroyCookie(null, "id_user");
         destroyCookie(null, "username");
         navigate("/");
         alert("Success logout");
+        break;
+      default:
+        break;
+    }
+    switch (e.target.tagName) {
+      case "A":
+        const response = await fetch(urlSearchMovieByGenre);
+        const { results } = await response.json();
+        dispatch(resultSearchMovie(results));
+        navigate("/result-search-movie");
         break;
       default:
         break;
@@ -65,9 +76,15 @@ export default function Header() {
             Home
           </Nav.Link>
           <NavDropdown title="Genre" id="navbarScrollingDropdown">
-            <NavDropdown.Item>Action</NavDropdown.Item>
-            <NavDropdown.Item>Adventure</NavDropdown.Item>
-            <NavDropdown.Item>Comedy</NavDropdown.Item>
+            {genre?.map((e, i) => {
+              if (i < 5) {
+                return (
+                  <NavDropdown.Item key={i} onClick={(e) => handleOnClick(e)}>
+                    {e.name}
+                  </NavDropdown.Item>
+                );
+              }
+            })}
           </NavDropdown>
           <input
             type="search"

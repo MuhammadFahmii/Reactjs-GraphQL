@@ -8,21 +8,21 @@ import TrailerButton from "./TrailerButton";
 
 export default function DetailMovie() {
   const { id_movie } = useParams();
+  const { id_user } = parseCookies();
   const navigate = useNavigate();
   const [detailMovie, setDetailMovie] = useState();
   const [similarMovie, setSimilarMovie] = useState();
   const [urlMovieVideo, setUrlMovieVideo] = useState();
-  const { id_user } = parseCookies();
   const {
     insertFavouriteMovie,
     insertFavouriteMovieLoading,
     insertFavouriteMovieError,
   } = InsertFavouriteMovie(id_movie);
 
+  const urlDetail = `${process.env.REACT_APP_URL_API}/movie/${id_movie}?api_key=${process.env.REACT_APP_API_KEY}`;
+  const urlSimiliarMovie = `${process.env.REACT_APP_URL_API}/movie/${id_movie}/similar?api_key=${process.env.REACT_APP_API_KEY}`;
+  const urlGetMovieVideo = `${process.env.REACT_APP_URL_API}/movie/${id_movie}/videos?api_key=${process.env.REACT_APP_API_KEY}`;
   useEffect(() => {
-    const urlDetail = `${process.env.REACT_APP_URL_API}/${id_movie}?api_key=${process.env.REACT_APP_API_KEY}`;
-    const urlSimiliarMovie = `${process.env.REACT_APP_URL_API}/${id_movie}/similar?api_key=${process.env.REACT_APP_API_KEY}`;
-    const urlGetMovieVideo = `${process.env.REACT_APP_URL_API}/${id_movie}/videos?api_key=${process.env.REACT_APP_API_KEY}`;
     const getDetail = async () => {
       const response = await fetch(urlDetail);
       const result = await response.json();
@@ -114,8 +114,7 @@ export default function DetailMovie() {
                   <TrailerButton path={urlMovieVideo} />
                 </Col>
               </Row>
-              <h3 className="text-white ">Overview:</h3>
-              <h4 className="text-danger" style={{ textAlign: "justify" }}>
+              <h4 style={{ textAlign: "justify", color: "white" }}>
                 {detailMovie.overview}
               </h4>
               <Comment id_movie={id_movie} detailMovie={detailMovie} />
