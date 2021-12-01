@@ -24,12 +24,9 @@ export default function FavouriteMovie() {
     deleteFavouriteMovieError,
   } = DeleteFavouriteMovie();
 
-  useEffect(() => {
-    getFavouriteMovieRefetch();
-    window.scroll({
-      top: window.innerWidth,
-      behavior: "smooth",
-    });
+  useEffect(async () => {
+    await getFavouriteMovieRefetch();
+    window.scrollTo(0, document.body.scrollHeight);
   }, [getFavouriteMovieRefetch, deleteFavouriteMovieData]);
 
   const handleOnClick = (e, id) => {

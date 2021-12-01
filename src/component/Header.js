@@ -68,7 +68,7 @@ export default function Header() {
         }}
       >
         <Nav navbarScroll>
-          <Navbar.Brand>Movie App</Navbar.Brand>
+          <Navbar.Brand>Ez Movie</Navbar.Brand>
           <Nav.Link as={Link} to={"/"}>
             Home
           </Nav.Link>

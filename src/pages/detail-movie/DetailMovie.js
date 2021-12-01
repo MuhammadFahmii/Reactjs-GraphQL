@@ -70,7 +70,7 @@ export default function DetailMovie() {
           },
         });
         navigate(`/favourite-movie/${id_user}`, { replace: true });
-        alert("success");
+        alert("Success");
         break;
       default:
         break;

@@ -45,15 +45,17 @@ export default function Comment({ id_movie, detailMovie }) {
             comment: newComment,
           },
         });
-        alert("success");
+        alert("Success");
         break;
       case "Delete":
-        deleteComment({
-          variables: {
-            id: props,
-          },
-        });
-        alert("success");
+        if (window.confirm("Apakah anda yakin?")) {
+          deleteComment({
+            variables: {
+              id: props,
+            },
+          });
+          alert("Success");
+        }
         break;
       case "Update":
         getCommentById({
@@ -77,7 +79,7 @@ export default function Comment({ id_movie, detailMovie }) {
             comment: comment.text,
           },
         });
-        alert("success");
+        alert("Success");
         setShow(false);
         break;
       default:
