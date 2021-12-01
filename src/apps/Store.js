@@ -1,10 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
-import MovieSlices from "./MovieSlices";
-import UserSlices from "./UserSlices";
+import MovieSlices from "../stores/MovieSlices";
 
 export default configureStore({
   reducer: {
-    userActive: UserSlices,
     movies: MovieSlices,
   },
 });

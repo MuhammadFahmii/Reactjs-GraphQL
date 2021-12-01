@@ -1,27 +1,22 @@
 import { Navbar, Nav, NavDropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useState } from "react";
-import { resultSearchMovie } from "./stores/MovieSlices";
+import { resultSearchMovie } from "../stores/MovieSlices";
 import { Genre } from "../constant/Genre";
+import { destroyCookie, parseCookies } from "nookies";
 export default function Header() {
-  const username = useSelector((state) => {
-    if (state.userActive.users.username !== "")
-      return state.userActive.users.username;
-  });
-  const id_user = useSelector((state) => {
-    if (state.userActive.users.id !== "") return state.userActive.users.id;
-  });
+  const genre = Genre;
+  const { id_user, username } = parseCookies();
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const urlSearch = `${process.env.REACT_APP_URL_API}/search/movie?api_key=${process.env.REACT_APP_API_KEY}&query=${search}&include_adult=false`;
 
   const handleOnChange = (search) => setSearch(search);
   const handleOnSearch = async (e) => {
     if (e.key === "Enter") {
-      const genre = Genre;
-      const urlSearch = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&query=${search}&include_adult=false`;
       const response = await fetch(urlSearch);
       const { results } = await response.json();
       let best = [];
@@ -32,7 +27,7 @@ export default function Header() {
               id: e.id,
               genre: name,
               title: e.title,
-              img: `https://image.tmdb.org/t/p/w200/${e.poster_path}`,
+              poster_path: e.poster_path,
             };
             best.push(newData);
           }
@@ -43,6 +38,27 @@ export default function Header() {
       setSearch("");
     }
   };
+  const handleClickLogout = async (e) => {
+    switch (e.target.innerHTML) {
+      case "Logout":
+        destroyCookie(null, "id_user");
+        destroyCookie(null, "username");
+        navigate("/");
+        alert("Success logout");
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleClickSearchGenre = async (id) => {
+    const urlSearchMovieByGenre = `${process.env.REACT_APP_URL_API}/discover/movie?api_key=${process.env.REACT_APP_API_KEY}&with_genres=${id}`;
+    const response = await fetch(urlSearchMovieByGenre);
+    const { results } = await response.json();
+    dispatch(resultSearchMovie(results));
+    navigate("/result-search-movie");
+  };
+
   return (
     <Navbar variant="dark" expand="lg">
       <Navbar.Toggle aria-controls="navbarScroll" />
@@ -57,11 +73,20 @@ export default function Header() {
             Home
           </Nav.Link>
           <NavDropdown title="Genre" id="navbarScrollingDropdown">
-            <NavDropdown.Item>Action</NavDropdown.Item>
-            <NavDropdown.Item>Adventure</NavDropdown.Item>
-            <NavDropdown.Item>Comedy</NavDropdown.Item>
+            {genre?.map((e, i) => {
+              if (i < 5) {
+                return (
+                  <NavDropdown.Item
+                    key={i}
+                    onClick={() => handleClickSearchGenre(e.id)}
+                  >
+                    {e.name}
+                  </NavDropdown.Item>
+                );
+              }
+              return true;
+            })}
           </NavDropdown>
-          <Nav.Link>Contact Us</Nav.Link>
           <input
             type="search"
             placeholder="Search"
@@ -77,14 +102,16 @@ export default function Header() {
             onKeyDown={(e) => handleOnSearch(e)}
           />
           {username !== undefined ? (
-            <NavDropdown title={username} className="mx-3">
+            <NavDropdown title={username}>
               <NavDropdown.Item as={Link} to={`/favourite-movie/${id_user}`}>
                 My Favourite
               </NavDropdown.Item>
               <NavDropdown.Item as={Link} to={"/setting"}>
                 Setting
               </NavDropdown.Item>
-              <NavDropdown.Item>Logout</NavDropdown.Item>
+              <NavDropdown.Item onClick={(e) => handleClickLogout(e)}>
+                Logout
+              </NavDropdown.Item>
             </NavDropdown>
           ) : (
             <Nav.Link as={Link} to="/sign-in">

@@ -1,38 +1,52 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { addActive } from "../component/stores/UserSlices";
 import { Link } from "react-router-dom";
-import GetUsername from "../hooks/GetUsername";
+import GetUsername from "../../hooks/GetUsername";
+import { setCookie } from "nookies";
 
 export default function SignIn() {
-  const { getUsername, getUsernameData, getUsernameLoading, getUsernameError } =
-    GetUsername();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { getUsername, getUsernameData, getUsernameLoading, getUsernameError } =
+    GetUsername();
   const [data, setData] = useState();
   useEffect(() => {
     if (getUsernameData?.length > 0) {
-      dispatch(addActive(getUsernameData[0]));
-      alert("welcome");
+      setCookie(null, "id_user", getUsernameData[0].id);
+      setCookie(null, "username", getUsernameData[0].username);
+      alert(`welcome ${getUsernameData[0].username}`);
       navigate("/", { replace: true });
     }
   }, [getUsernameData, navigate, dispatch]);
 
-  const onChange = (e) => {
+  const handleOnChange = (e) => {
     setData({
       ...data,
       [e.target.name]: e.target.value,
     });
+    document.querySelector("#username-error").innerHTML = "";
+    document.querySelector("#password-error").innerHTML = "";
   };
 
-  const handleGetByUsername = () => {
-    getUsername({
-      variables: {
-        username: data.username,
-        password: data.password,
-      },
-    });
+  const handleOnClick = (e) => {
+    e.preventDefault();
+    if (data === undefined) {
+      alert("Pastikan semua data terisi");
+    } else if (data.password === undefined || data.password === "") {
+      document.querySelector("#password-error").innerHTML =
+        "Password tidak boleh kosong";
+    } else if (data.username === undefined || data.username === "") {
+      document.querySelector("#username-error").innerHTML =
+        "Username tidak boleh kosong";
+    } else {
+      getUsername({
+        variables: {
+          username: data.username,
+          password: data.password,
+        },
+      });
+    }
   };
 
   if (getUsernameLoading) {
@@ -50,8 +64,8 @@ export default function SignIn() {
               <h1 id="signin-title">Sign In</h1>
             </div>
           </div>
-          <form className="myform">
-            <div className="form-group">
+          <form>
+            <div className="form-group mb-3">
               <label htmlFor="username">Username</label>
               <input
                 type="username"
@@ -59,8 +73,9 @@ export default function SignIn() {
                 className="form-control"
                 id="username"
                 placeholder="Enter Username"
-                onChange={onChange}
+                onChange={handleOnChange}
               />
+              <span id="username-error" style={{ color: "red" }}></span>
             </div>
             <div className="form-group">
               <label htmlFor="password">Password</label>
@@ -71,14 +86,15 @@ export default function SignIn() {
                 className="form-control"
                 aria-describedby="emailHelp"
                 placeholder="Enter Password"
-                onChange={onChange}
+                onChange={handleOnChange}
               />
+              <span id="password-error" style={{ color: "red" }}></span>
             </div>
             <div className="col-md-12 text-center mt-3 mb-3">
               <button
                 type="submit"
                 className=" btn btn-block btn-primary"
-                onClick={handleGetByUsername}
+                onClick={(e) => handleOnClick(e)}
               >
                 Login
               </button>

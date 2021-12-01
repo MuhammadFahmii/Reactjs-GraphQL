@@ -1,9 +1,18 @@
 import { useMutation } from "@apollo/client";
 import { MutationUpdateComment } from "../graphql/Mutation";
+import { QueryGetComments } from "../graphql/Query";
 
-export default function UpdateComment() {
+export default function UpdateComment(id_movie) {
   const [updateComment, { data, loading, error }] = useMutation(
-    MutationUpdateComment
+    MutationUpdateComment,
+    {
+      refetchQueries: [
+        {
+          query: QueryGetComments,
+          variables: { id_movie },
+        },
+      ],
+    }
   );
   return {
     updateComment,
