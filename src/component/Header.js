@@ -106,9 +106,6 @@ export default function Header() {
               <NavDropdown.Item as={Link} to={`/favourite-movie/${id_user}`}>
                 My Favourite
               </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to={"/setting"}>
-                Setting
-              </NavDropdown.Item>
               <NavDropdown.Item onClick={(e) => handleClickLogout(e)}>
                 Logout
               </NavDropdown.Item>
